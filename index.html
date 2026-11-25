@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     
     <style>
-  :root {
+ :root {
     --bg-dark: #060913;
     --glass: rgba(14, 21, 42, 0.85);
     --border-glow: rgba(0, 242, 254, 0.35);
@@ -55,13 +55,26 @@ body {
     transition: opacity 0.5s ease;
 }
 
-#camera-feed.active { opacity: 0.65; }
+#camera-feed.active {
+    opacity: 1;
+}
 
 .space-overlay {
     position: fixed;
     inset: 0;
     background: radial-gradient(circle at 50% 20%, rgba(123, 44, 191, 0.28), rgba(6, 9, 19, 0.94));
     z-index: -1;
+    transition: opacity 0.4s ease;
+}
+
+.space-overlay.camera-mode {
+    opacity: 0.18;
+}
+
+.app-container.camera-mode {
+    background: rgba(10, 16, 34, 0.48);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 /* MENÚ HAMBURGUESA LATERAL */
@@ -187,6 +200,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     overflow: hidden;
+    transition: background 0.4s ease;
 }
 
 /* CABECERA PROFESIONAL */
@@ -292,7 +306,7 @@ body {
 /* SELECTOR DE SATÉLITE */
 .selector-row {
     width: 100%;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     flex-shrink: 0;
 }
 
@@ -329,25 +343,28 @@ body {
 }
 
 .lock-meter-box {
-    background: rgba(0, 0, 0, 0.38);
+    background: rgba(0, 0, 0, 0.45);
     padding: 5px 8px;
     border-radius: 9px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     flex-shrink: 0;
 }
 
 .lock-header {
     display: flex;
     justify-content: space-between;
-    font-size: 0.6rem;
-    font-weight: 700;
+    align-items: center;
+    font-size: 0.62rem;
+    font-weight: 800;
     color: var(--text-muted);
     margin-bottom: 3px;
 }
 
 #sat-quality-text {
     color: var(--cyan);
-    font-size: 0.72rem;
+    font-size: 0.85rem;
+    font-weight: 900;
+    text-shadow: 0 0 8px rgba(0, 242, 254, 0.6);
 }
 
 .progress-track {
@@ -365,7 +382,34 @@ body {
     transition: width 0.15s ease-out;
 }
 
-/* RADAR AUTO-ADAPTABLE A LA ALTURA DEL TELÉFONO */
+/* VISUALIZADOR CARDINAL EN VIVO */
+.compass-live-pill {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 242, 254, 0.12);
+    border: 1px solid rgba(0, 242, 254, 0.4);
+    border-radius: 8px;
+    padding: 3px 10px;
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+.compass-live-pill span {
+    font-size: 0.64rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: 0.5px;
+}
+
+.compass-live-pill strong {
+    font-size: 0.85rem;
+    font-weight: 900;
+    color: var(--amber);
+    text-shadow: 0 0 8px rgba(255, 190, 11, 0.6);
+}
+
+/* RADAR AUTO-ADAPTABLE CON CARDINALES EXTERIORES N S E O */
 .radar-section {
     display: flex;
     flex-direction: column;
@@ -373,15 +417,73 @@ body {
     justify-content: center;
     flex: 1;
     min-height: 0;
-    margin: 4px 0;
+    margin: 2px 0;
+}
+
+.radar-compass-wrapper {
+    position: relative;
+    width: clamp(165px, 27vh, 215px);
+    height: clamp(165px, 27vh, 215px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.cardinal-mark {
+    position: absolute;
+    font-size: 0.92rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: rgba(6, 9, 19, 0.92);
+    z-index: 5;
+    user-select: none;
+}
+
+.cardinal-n {
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ff3b5c;
+    border: 1.5px solid #ff3b5c;
+    box-shadow: 0 0 10px rgba(255, 59, 92, 0.6);
+}
+
+.cardinal-s {
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--cyan);
+    border: 1.5px solid var(--cyan);
+    box-shadow: 0 0 8px rgba(0, 242, 254, 0.45);
+}
+
+.cardinal-e {
+    right: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--amber);
+    border: 1.5px solid var(--amber);
+    box-shadow: 0 0 8px rgba(255, 190, 11, 0.45);
+}
+
+.cardinal-o {
+    left: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--green);
+    border: 1.5px solid var(--green);
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.45);
 }
 
 .radar-sphere {
     position: relative;
-    width: clamp(135px, 23vh, 185px);
-    height: clamp(135px, 23vh, 185px);
+    width: clamp(130px, 21vh, 172px);
+    height: clamp(130px, 21vh, 172px);
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(0, 242, 254, 0.1) 0%, rgba(6, 9, 19, 0.88) 75%);
+    background: radial-gradient(circle, rgba(0, 242, 254, 0.1) 0%, rgba(6, 9, 19, 0.85) 75%);
     border: 2px solid var(--border-glow);
     box-shadow: 0 0 22px rgba(0, 242, 254, 0.18), inset 0 0 18px rgba(123, 44, 191, 0.25);
     display: flex;
@@ -389,6 +491,11 @@ body {
     align-items: center;
     overflow: hidden;
     flex-shrink: 0;
+}
+
+.radar-sphere.frozen-lock {
+    border-color: var(--green);
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.55), inset 0 0 20px rgba(0, 255, 136, 0.25);
 }
 
 .orbit {
@@ -421,7 +528,7 @@ body {
 .sat-icon { font-size: 1.25rem; filter: drop-shadow(0 0 10px var(--cyan)); }
 
 .sat-label {
-    font-size: 0.52rem;
+    font-size: 0.54rem;
     font-weight: 800;
     background: rgba(0, 10, 25, 0.88);
     border: 1px solid var(--cyan);
@@ -441,41 +548,87 @@ body {
     z-index: 2;
 }
 
-.alignment-status {
-    margin: 5px 0 0;
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: var(--cyan);
-    text-align: center;
-    background: rgba(0, 242, 254, 0.1);
-    padding: 5px 8px;
-    border-radius: 10px;
+.status-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     width: 100%;
-    border: 1px solid rgba(0, 242, 254, 0.25);
+    margin-top: 4px;
     flex-shrink: 0;
 }
 
+.alignment-status {
+    flex: 1;
+    margin: 0;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--cyan);
+    text-align: center;
+    background: rgba(0, 242, 254, 0.12);
+    padding: 5px 8px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 242, 254, 0.3);
+}
+
+.btn-unfreeze {
+    display: none;
+    width: auto;
+    padding: 5px 9px;
+    background: linear-gradient(135deg, var(--amber), #ff8800);
+    color: #060913;
+    font-size: 0.68rem;
+    font-weight: 900;
+    border-radius: 9px;
+    box-shadow: 0 0 12px rgba(255, 190, 11, 0.5);
+    flex-shrink: 0;
+}
+
+.btn-unfreeze.visible {
+    display: inline-block;
+}
+
+/* NÚMEROS DE TELEMETRÍA MÁS GRUESOS Y LEGIBLES */
 .telemetry-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 5px;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     flex-shrink: 0;
 }
 
 .stat-card {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(6, 12, 28, 0.65);
+    border: 1px solid rgba(0, 242, 254, 0.18);
     border-radius: 9px;
-    padding: 5px 7px;
+    padding: 4px 7px;
     display: flex;
     flex-direction: column;
 }
 
-.stat-label { font-size: 0.52rem; color: var(--text-muted); margin-bottom: 1px; }
-.stat-value { font-size: 0.78rem; font-weight: 700; }
-.stat-value.amber { color: var(--amber); }
-.stat-value.small { font-size: 0.66rem; }
+.stat-label {
+    font-size: 0.54rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 1px;
+}
+
+.stat-value {
+    font-size: 0.94rem;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    color: #ffffff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+.stat-value.amber {
+    color: var(--amber);
+    font-size: 0.92rem;
+}
+
+.stat-value.small {
+    font-size: 0.74rem;
+    font-weight: 800;
+}
 
 /* VISTAS SECUNDARIAS COMPACTAS */
 .tool-banner {
@@ -524,9 +677,9 @@ body {
 .dish-current-line { background: var(--amber); box-shadow: 0 0 8px var(--amber); transform: rotate(0deg); }
 
 .dish-readout { display: flex; flex-direction: column; align-items: center; margin-top: 5px; }
-.big-deg { font-size: 1.4rem; font-weight: 800; color: var(--cyan); }
-.target-deg { font-size: 0.7rem; color: var(--text-muted); }
-.target-deg strong { color: var(--green); }
+.big-deg { font-size: 1.55rem; font-weight: 900; color: var(--cyan); text-shadow: 0 0 8px rgba(0, 242, 254, 0.4); }
+.target-deg { font-size: 0.72rem; color: var(--text-muted); }
+.target-deg strong { color: var(--green); font-weight: 900; }
 
 .offset-config {
     display: flex;
@@ -547,7 +700,7 @@ body {
     padding: 3px;
     border-radius: 6px;
     text-align: center;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .level-container { display: flex; justify-content: center; align-items: center; margin: 4px 0; }
@@ -580,29 +733,99 @@ body {
 }
 
 .fta-panel {
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(0, 242, 254, 0.18);
+    background: rgba(0, 0, 0, 0.38);
+    border: 1px solid rgba(0, 242, 254, 0.22);
     border-radius: 10px;
-    padding: 7px;
-    margin-bottom: 6px;
+    padding: 6px 7px;
+    margin-bottom: 5px;
 }
 
-.section-mini-title { display: block; font-size: 0.58rem; font-weight: 800; color: var(--cyan); margin-bottom: 4px; }
-.fta-grid, .manual-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 5px; }
-.manual-grid { padding-top: 5px; border-top: 1px dashed rgba(255, 255, 255, 0.12); }
+.section-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.section-mini-title {
+    display: block;
+    font-size: 0.58rem;
+    font-weight: 800;
+    color: var(--cyan);
+    margin-bottom: 3px;
+}
+
+.mode-toggle-btn {
+    width: auto;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.6rem;
+    font-weight: 900;
+    background: rgba(0, 255, 136, 0.2);
+    color: var(--green);
+    border: 1px solid var(--green);
+}
+
+.mode-toggle-btn.manual-active {
+    background: rgba(255, 190, 11, 0.22);
+    color: var(--amber);
+    border-color: var(--amber);
+}
+
+.fta-grid, .manual-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    margin-top: 4px;
+}
+
+.manual-grid {
+    padding-top: 4px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.14);
+}
 
 .input-box { display: flex; flex-direction: column; }
 .input-box label { font-size: 0.52rem; color: var(--text-muted); margin-bottom: 2px; font-weight: 700; }
 .input-box input, .input-box select {
     width: 100%;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 242, 254, 0.28);
     border-radius: 6px;
     padding: 4px;
     color: #fff;
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 0.74rem;
+    font-weight: 800;
     text-align: center;
+    outline: none;
+}
+
+.input-box input:focus, .input-box select:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 8px rgba(0, 242, 254, 0.35);
+}
+
+.tp-save-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.tp-save-bar small {
+    font-size: 0.58rem;
+    color: var(--text-muted);
+    flex: 1;
+}
+
+.btn-save-tp {
+    width: auto;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.62rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--green), #00b4d8);
+    color: #030712;
 }
 
 .save-row { display: flex; gap: 5px; }
@@ -610,22 +833,78 @@ body {
     flex: 1;
     min-width: 0;
     background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 7px;
     padding: 5px 7px;
     color: #fff;
     font-size: 0.7rem;
 }
 
-.btn-mini { width: auto; padding: 5px 9px; background: var(--cyan); color: #030712; border-radius: 7px; font-size: 0.68rem; }
+.btn-mini {
+    width: auto;
+    padding: 5px 9px;
+    background: var(--cyan);
+    color: #030712;
+    border-radius: 7px;
+    font-size: 0.68rem;
+    font-weight: 800;
+}
 
-.saved-list { list-style: none; max-height: 75px; overflow-y: auto; margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
-.saved-list li { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.05); padding: 4px 7px; border-radius: 7px; font-size: 0.68rem; }
-.del-site { width: auto; padding: 2px 6px; background: rgba(255, 59, 92, 0.25); color: var(--red); font-size: 0.65rem; }
+.saved-list {
+    list-style: none;
+    max-height: 68px;
+    overflow-y: auto;
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
 
-.obstacle-result { display: flex; flex-direction: column; align-items: center; background: rgba(0, 242, 254, 0.08); border: 1px solid var(--cyan); padding: 10px; border-radius: 10px; text-align: center; }
+.saved-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 4px 7px;
+    border-radius: 7px;
+    font-size: 0.66rem;
+}
+
+.site-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.load-site {
+    width: auto;
+    padding: 2px 6px;
+    background: rgba(0, 242, 254, 0.2);
+    color: var(--cyan);
+    font-size: 0.62rem;
+}
+
+.del-site {
+    width: auto;
+    padding: 2px 6px;
+    background: rgba(255, 59, 92, 0.25);
+    color: var(--red);
+    font-size: 0.65rem;
+}
+
+.obstacle-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 242, 254, 0.08);
+    border: 1px solid var(--cyan);
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+}
+
 .obstacle-result span { font-size: 0.6rem; color: var(--text-muted); }
-.obstacle-result strong { font-size: 1.35rem; color: var(--green); margin: 3px 0; }
+.obstacle-result strong { font-size: 1.35rem; color: var(--green); margin: 3px 0; font-weight: 900; }
 .obstacle-result small { font-size: 0.64rem; color: var(--cyan); }
 
 /* CONTROLES INFERIORES ANCLADOS SIEMPRE VISIBLES */
@@ -650,22 +929,30 @@ button {
     cursor: pointer;
 }
 
-.btn-primary { background: linear-gradient(135deg, var(--cyan), #0072ff); color: #030712; box-shadow: 0 4px 12px rgba(0, 242, 254, 0.3); }
-.btn-secondary { background: rgba(255, 255, 255, 0.08); color: var(--text-main); border: 1px solid rgba(255, 255, 255, 0.15); }
+.btn-primary {
+    background: linear-gradient(135deg, var(--cyan), #0072ff);
+    color: #030712;
+    box-shadow: 0 4px 12px rgba(0, 242, 254, 0.3);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-main);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+
+
+
+
 </style>
-
-
-
-             
-        
-   
-    
+ 
     
 </head>
 <body>
 
     <video id="camera-feed" autoplay playsinline muted></video>
-    <div class="space-overlay"></div>
+    <div class="space-overlay" id="space-overlay"></div>
 
     <!-- MENÚ HAMBURGUESA DESLIZABLE -->
     <div class="drawer-backdrop" id="drawer-backdrop"></div>
@@ -721,7 +1008,7 @@ button {
         </nav>
 
         <div class="drawer-footer">
-            <p>StarFinder 6D Suite v2.1</p>
+            <p>StarFinder 6D Suite v2.5</p>
             <small>GPS + Cálculo Orbital Offline</small>
         </div>
     </aside>
@@ -756,8 +1043,9 @@ button {
         <div class="selector-row">
             <select id="sat-select" class="sat-dropdown">
                 <option value="starlink">🛰️ STARLINK (Internet Alta Velocidad)</option>
+                <option value="intelsat35">🇻🇪 INTELSAT 35e (34.5° W - TV Venezuela FTA)</option>
+                <option value="amazonas">📡 AMAZONAS 2/3/5 (61.0° W - FTA / Movistar)</option>
                 <option value="simpletv">📺 SIMPLE TV (95.0° W - Venezuela)</option>
-                <option value="movistar">📡 MOVISTAR TV (61.0° W - Amazonas)</option>
                 <option value="cantv">🇻🇪 CANTV / VENESAT (78.0° W)</option>
                 <option value="fta_tupac">🔓 FTA TÚPAC KATARI (87.2° W)</option>
                 <option value="fta_hispasat">🔓 FTA HISPASAT (30.0° W)</option>
@@ -767,8 +1055,8 @@ button {
                 <option value="manual">⚙️ PERSONALIZADO (Grados Manuales)</option>
             </select>
         </div>
-
-        <!-- VISTA 1: RADAR 6D PRINCIPAL -->
+        
+     <!-- VISTA 1: RADAR 6D PRINCIPAL -->
         <div class="view-section active" id="view-radar">
             <div class="lock-meter-box">
                 <div class="lock-header">
@@ -778,25 +1066,39 @@ button {
                 <div class="progress-track">
                     <div class="progress-fill" id="sat-quality-bar"></div>
                 </div>
+                <div class="compass-live-pill">
+                    <span>🧭 ORIENTACIÓN EN VIVO:</span>
+                    <strong id="cardinal-live-text">NORTE (0°)</strong>
+                </div>
             </div>
 
             <main class="radar-section">
-                <div class="radar-sphere">
-                    <div class="orbit ring-1"></div>
-                    <div class="orbit ring-2"></div>
-                    <div class="orbit ring-3"></div>
-                    <div class="crosshair"></div>
-                    
-                    <div class="satellite-target" id="sat-target">
-                        <div class="sat-icon">🛰️</div>
-                        <span class="sat-label" id="sat-badge-name">STARLINK</span>
-                    </div>
+                <div class="radar-compass-wrapper">
+                    <span class="cardinal-mark cardinal-n">N</span>
+                    <span class="cardinal-mark cardinal-s">S</span>
+                    <span class="cardinal-mark cardinal-e">E</span>
+                    <span class="cardinal-mark cardinal-o">O</span>
 
-                    <div class="user-aim" id="user-aim"></div>
+                    <div class="radar-sphere" id="radar-sphere">
+                        <div class="orbit ring-1"></div>
+                        <div class="orbit ring-2"></div>
+                        <div class="orbit ring-3"></div>
+                        <div class="crosshair"></div>
+
+                        <div class="satellite-target" id="sat-target">
+                            <div class="sat-icon">🛰️</div>
+                            <span class="sat-label" id="sat-badge-name">STARLINK</span>
+                        </div>
+
+                        <div class="user-aim" id="user-aim"></div>
+                    </div>
                 </div>
 
-                <div class="alignment-status" id="alignment-msg">
-                    Presiona "ACTIVAR SENSORES" para rastrear
+                <div class="status-bar-row">
+                    <div class="alignment-status" id="alignment-msg">
+                        Presiona "ACTIVAR SENSORES" para rastrear
+                    </div>
+                    <button id="btn-unfreeze" class="btn-unfreeze" title="Liberar captura congelada">🔄 NORMAL</button>
                 </div>
             </main>
 
@@ -879,27 +1181,31 @@ button {
                 Activa los sensores para nivelar el tubo
             </div>
         </div>
-
-              <!-- VISTA 4: BANCO TP FTA Y BITÁCORA -->
+        
+          <!-- VISTA 4: BANCO TP FTA Y BITÁCORA -->
         <div class="view-section" id="view-fta">
             <div class="fta-panel">
-                <label class="section-mini-title">TRANSPONDEDORES PRE-CARGADOS (TP)</label>
+                <div class="section-header-row">
+                    <label class="section-mini-title" style="margin:0;">TRANSPONDEDORES Y PARÁMETROS</label>
+                    <button type="button" id="btn-toggle-mode" class="mode-toggle-btn">MODO: AUTOMÁTICO</button>
+                </div>
+
                 <select id="tp-preset-select" class="sat-dropdown small-select"></select>
 
                 <div class="fta-grid">
                     <div class="input-box">
                         <label>FRECUENCIA</label>
-                        <input type="number" id="tp-freq" value="11880">
+                        <input type="number" id="tp-freq" value="11018">
                     </div>
                     <div class="input-box">
                         <label>SYMBOL RATE</label>
-                        <input type="number" id="tp-sr" value="30000">
+                        <input type="number" id="tp-sr" value="7500">
                     </div>
                     <div class="input-box">
                         <label>POLARIZACIÓN</label>
                         <select id="tp-pol">
-                            <option value="V">Vertical (V)</option>
                             <option value="H">Horizontal (H)</option>
+                            <option value="V">Vertical (V)</option>
                         </select>
                     </div>
                 </div>
@@ -907,32 +1213,33 @@ button {
                 <div class="manual-grid">
                     <div class="input-box">
                         <label>AZIMUT (°)</label>
-                        <input type="number" id="manual-az" min="0" max="360" value="269">
+                        <input type="number" id="manual-az" min="0" max="360" value="84">
                     </div>
                     <div class="input-box">
                         <label>ELEVACIÓN (°)</label>
-                        <input type="number" id="manual-el" min="0" max="90" value="53">
+                        <input type="number" id="manual-el" min="0" max="90" value="56">
                     </div>
                     <div class="input-box">
-                        <label>SKEW LNB</label>
-                        <input type="text" id="lnb-skew" value="-76°" readonly>
+                        <label>SKEW LNB (°)</label>
+                        <input type="text" id="lnb-skew" value="-76°">
                     </div>
+                </div>
+
+                <div class="tp-save-bar">
+                    <small id="tp-save-feedback">Edita TP o Skew y guarda cambios</small>
+                    <button type="button" id="btn-save-tp" class="btn-save-tp">💾 GUARDAR TP / SKEW</button>
                 </div>
             </div>
 
             <div class="fta-panel">
-                <label class="section-mini-title">💾 BITÁCORA DE ZONAS / CLIENTES (OFFLINE)</label>
+                <label class="section-mini-title">📋 BITÁCORA DE ZONAS / CLIENTES (OFFLINE)</label>
                 <div class="save-row">
                     <input type="text" id="site-name-input" placeholder="Ej: Mina El Callao / Finca Norte">
-                    <button id="btn-save-site" class="btn-mini">GUARDAR</button>
+                    <button type="button" id="btn-save-site" class="btn-mini">GUARDAR</button>
                 </div>
                 <ul class="saved-list" id="saved-sites-list"></ul>
             </div>
         </div>
-        
-      
-      
-      
 
         <!-- VISTA 5: CALCULADORA DE OBSTÁCULOS -->
         <div class="view-section" id="view-obstacle">
@@ -966,7 +1273,7 @@ button {
             </div>
         </footer>
     </div>
-
+       
 
 <script>
 
@@ -977,7 +1284,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// 2. BANNER SUPERIOR DE ESTADO + VOZ DE GOOGLE
+// 2. BANNER SUPERIOR DE ESTADO + VOZ
 (function initNetworkBanner() {
     const appBox = document.getElementById('card-3d');
     if (!appBox) return;
@@ -1116,7 +1423,10 @@ const tiltVal = document.getElementById('tilt-val');
 const skewDisplay = document.getElementById('skew-display');
 const gpsVal = document.getElementById('gps-val');
 const gpsZoneLabel = document.getElementById('gps-zone-label');
+const cardinalLiveText = document.getElementById('cardinal-live-text');
 const alignmentMsg = document.getElementById('alignment-msg');
+const btnUnfreeze = document.getElementById('btn-unfreeze');
+const radarSphere = document.getElementById('radar-sphere');
 const userAim = document.getElementById('user-aim');
 const satTarget = document.getElementById('sat-target');
 const satBadgeName = document.getElementById('sat-badge-name');
@@ -1132,6 +1442,9 @@ const tpPol = document.getElementById('tp-pol');
 const manualAzInput = document.getElementById('manual-az');
 const manualElInput = document.getElementById('manual-el');
 const lnbSkewInput = document.getElementById('lnb-skew');
+const btnToggleMode = document.getElementById('btn-toggle-mode');
+const btnSaveTp = document.getElementById('btn-save-tp');
+const tpSaveFeedback = document.getElementById('tp-save-feedback');
 
 const dishCurrentDeg = document.getElementById('dish-current-deg');
 const dishTargetDeg = document.getElementById('dish-target-deg');
@@ -1156,39 +1469,161 @@ const btnSensors = document.getElementById('btn-sensors');
 const btnCamera = document.getElementById('btn-camera');
 const btnBeep = document.getElementById('btn-beep');
 const cameraFeed = document.getElementById('camera-feed');
+const spaceOverlay = document.getElementById('space-overlay');
 
 const savedCoords = MilitaryStorage.load('sf_last_gps', { lat: 8.1222, lon: -63.5497 });
 let userLat = savedCoords.lat;
 let userLon = savedCoords.lon;
 gpsVal.textContent = `${userLat.toFixed(4)}, ${userLon.toFixed(4)}`;
 
-satSelect.value = MilitaryStorage.load('sf_selected_sat', 'starlink');
+const DEFAULT_SATELLITE_DB = {
+    starlink: {
+        name: 'STARLINK',
+        isGeo: false,
+        fixedAz: 20,
+        fixedEl: 58,
+        tolAz: 22,
+        tolEl: 20,
+        customSkew: '',
+        tps: [{ label: 'Banda Ku Automática Starlink', freq: 11700, sr: 0, pol: 'V' }]
+    },
+    intelsat35: {
+        name: 'INTELSAT 35e (34.5°W)',
+        isGeo: true,
+        satLon: -34.5,
+        tolAz: 7,
+        tolEl: 7,
+        customSkew: '',
+        tps: [
+            { label: 'TP Cazador TV Venezuela (11018 H)', freq: 11018, sr: 7500, pol: 'H' },
+            { label: 'TP Mux Nacionales FTA (11545 H)', freq: 11545, sr: 13500, pol: 'H' },
+            { label: 'TP Banda Ku Venezuela (11635 H)', freq: 11635, sr: 30000, pol: 'H' }
+        ]
+    },
+    amazonas: {
+        name: 'AMAZONAS 2/3/5 (61°W)',
+        isGeo: true,
+        satLon: -61.0,
+        tolAz: 7,
+        tolEl: 7,
+        customSkew: '',
+        tps: [
+            { label: 'TP Cazador Fuerte (10728 H)', freq: 10728, sr: 28888, pol: 'H' },
+            { label: 'TP Principal Amazonas (11884 H)', freq: 11884, sr: 28888, pol: 'H' },
+            { label: 'TP FTA / Datos Ku (12052 V)', freq: 12052, sr: 28888, pol: 'V' },
+            { label: 'TP HD Latinoamérica (12390 H)', freq: 12390, sr: 28888, pol: 'H' }
+        ]
+    },
+    simpletv: {
+        name: 'SIMPLE TV (95°W)',
+        isGeo: true,
+        satLon: -95.0,
+        tolAz: 8,
+        tolEl: 8,
+        customSkew: '',
+        tps: [
+            { label: 'TP Cazador Principal (11880 V)', freq: 11880, sr: 30000, pol: 'V' },
+            { label: 'TP Canales Nacionales (11520 H)', freq: 11520, sr: 30000, pol: 'H' }
+        ]
+    },
+    cantv: {
+        name: 'CANTV (78°W)',
+        isGeo: true,
+        satLon: -78.0,
+        tolAz: 8,
+        tolEl: 8,
+        customSkew: '',
+        tps: [{ label: 'TP Venesat / C-Ku (11560 H)', freq: 11560, sr: 28800, pol: 'H' }]
+    },
+    fta_tupac: {
+        name: 'FTA TÚPAC (87.2°W)',
+        isGeo: true,
+        satLon: -87.2,
+        tolAz: 8,
+        tolEl: 8,
+        customSkew: '',
+        tps: [
+            { label: 'TP Cazador Fuerte (11670 V)', freq: 11670, sr: 15000, pol: 'V' },
+            { label: 'TP Canales Libres HD (11560 V)', freq: 11560, sr: 30000, pol: 'V' }
+        ]
+    },
+    fta_hispasat: {
+        name: 'FTA HISPASAT (30°W)',
+        isGeo: true,
+        satLon: -30.0,
+        tolAz: 8,
+        tolEl: 8,
+        customSkew: '',
+        tps: [
+            { label: 'TP Cazador América (11884 V)', freq: 11884, sr: 27500, pol: 'V' },
+            { label: 'TP Internacional FTA (12052 H)', freq: 12052, sr: 27500, pol: 'H' }
+        ]
+    },
+    fta_ses6: {
+        name: 'FTA SES-6 (40.5°W)',
+        isGeo: true,
+        satLon: -40.5,
+        tolAz: 8,
+        tolEl: 8,
+        customSkew: '',
+        tps: [{ label: 'TP Banda Ku Libre (11800 H)', freq: 11800, sr: 30000, pol: 'H' }]
+    },
+    fta_telstar: {
+        name: 'FTA TELSTAR (15°W)',
+        isGeo: true,
+        satLon: -15.0,
+        tolAz: 8,
+        tolEl: 8,
+        customSkew: '',
+        tps: [{ label: 'TP Cazador (11604 V)', freq: 11604, sr: 3300, pol: 'V' }]
+    },
+    fta_intelsat21: {
+        name: 'FTA INTELSAT 21 (58°W)',
+        isGeo: true,
+        satLon: -58.0,
+        tolAz: 8,
+        tolEl: 8,
+        customSkew: '',
+        tps: [{ label: 'TP Libre Ku (11920 H)', freq: 11920, sr: 28800, pol: 'H' }]
+    },
+    manual: {
+        name: 'PERSONALIZADO / FTA',
+        isGeo: false,
+        fixedAz: 269,
+        fixedEl: 53,
+        tolAz: 8,
+        tolEl: 8,
+        customSkew: '0°',
+        tps: [{ label: 'Transpondedor Personalizado', freq: 11880, sr: 30000, pol: 'V' }]
+    }
+};
+
+let SATELLITE_DB = MilitaryStorage.load('sf_custom_sat_db_v2', DEFAULT_SATELLITE_DB);
+Object.keys(DEFAULT_SATELLITE_DB).forEach(k => {
+    if (!SATELLITE_DB[k]) SATELLITE_DB[k] = DEFAULT_SATELLITE_DB[k];
+});
+
+satSelect.value = MilitaryStorage.load('sf_selected_sat', 'intelsat35');
 offsetAngleInput.value = MilitaryStorage.load('sf_offset_angle', '22.5');
 obsHeightInput.value = MilitaryStorage.load('sf_obs_height', '6');
 
-const SATELLITE_DB = {
-    starlink: { name: 'STARLINK', isGeo: false, fixedAz: 20, fixedEl: 58, tolAz: 22, tolEl: 20, tps: [{ label: 'Banda Ku Automática Starlink', freq: 11700, sr: 0, pol: 'V' }] },
-    simpletv: { name: 'SIMPLE TV (95°W)', isGeo: true, satLon: -95.0, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Cazador Principal (11880 V)', freq: 11880, sr: 30000, pol: 'V' }, { label: 'TP Canales Nacionales (11520 H)', freq: 11520, sr: 30000, pol: 'H' }] },
-    movistar: { name: 'MOVISTAR (61°W)', isGeo: true, satLon: -61.0, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Cazador Amazonas (11884 H)', freq: 11884, sr: 28888, pol: 'H' }, { label: 'TP HD Venezuela (11972 H)', freq: 11972, sr: 28888, pol: 'H' }] },
-    cantv: { name: 'CANTV (78°W)', isGeo: true, satLon: -78.0, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Venesat / C-Ku (11560 H)', freq: 11560, sr: 28800, pol: 'H' }] },
-    fta_tupac: { name: 'FTA TÚPAC (87.2°W)', isGeo: true, satLon: -87.2, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Cazador Fuerte (11670 V)', freq: 11670, sr: 15000, pol: 'V' }, { label: 'TP Canales Libres HD (11560 V)', freq: 11560, sr: 30000, pol: 'V' }] },
-    fta_hispasat: { name: 'FTA HISPASAT (30°W)', isGeo: true, satLon: -30.0, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Cazador América (11884 V)', freq: 11884, sr: 27500, pol: 'V' }, { label: 'TP Internacional FTA (12052 H)', freq: 12052, sr: 27500, pol: 'H' }] },
-    fta_ses6: { name: 'FTA SES-6 (40.5°W)', isGeo: true, satLon: -40.5, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Banda Ku Libre (11800 H)', freq: 11800, sr: 30000, pol: 'H' }] },
-    fta_telstar: { name: 'FTA TELSTAR (15°W)', isGeo: true, satLon: -15.0, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Cazador (11604 V)', freq: 11604, sr: 3300, pol: 'V' }] },
-    fta_intelsat21: { name: 'FTA INTELSAT 21 (58°W)', isGeo: true, satLon: -58.0, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Libre Ku (11920 H)', freq: 11920, sr: 28800, pol: 'H' }] },
-    manual: { name: 'MANUAL / FTA', isGeo: false, fixedAz: 269, fixedEl: 53, tolAz: 8, tolEl: 8, tps: [{ label: 'Transpondedor Personalizado', freq: 11880, sr: 30000, pol: 'V' }] }
-};
-
-let activeTarget = { name: 'STARLINK', az: 20, el: 58, skew: 0, tolAz: 22, tolEl: 20 };
+let isManualMode = MilitaryStorage.load('sf_is_manual_mode', false);
+let activeTarget = { name: 'INTELSAT 35e', az: 84, el: 56, skew: '-76°', tolAz: 7, tolEl: 7 };
 let beepEnabled = MilitaryStorage.load('sf_beep_enabled', true);
 let audioCtx = null;
 let lastBeepTime = 0;
 let lastVibeTime = 0;
 let cameraActive = false;
 let stream = null;
+
+// VARIABLES DE CAPTURA AUTOMÁTICA Y CONGELAMIENTO
+let isSignalFrozen = false;
+let lockHoldFrames = 0;
+let frozenSnapshot = null;
+
 btnBeep.textContent = beepEnabled ? '🔊 PITIDO: ON' : '🔇 PITIDO: OFF';
 
-// 6. CÁLCULO ASTRONÓMICO Y ACTUALIZACIÓN DE SATÉLITE
+// 6. CÁLCULO ASTRONÓMICO, MODO MANUAL/AUTO Y EDICIÓN PERSISTENTE
 function calculateGeoAngles(latDeg, lonDeg, satLonDeg) {
     const rad = Math.PI / 180;
     const deg = 180 / Math.PI;
@@ -1205,6 +1640,27 @@ function calculateGeoAngles(latDeg, lonDeg, satLonDeg) {
     return { az: Math.round(az), el: Math.max(5, Math.round(el)), skew: Math.round(skew) };
 }
 
+function updateModeButtonUI() {
+    if (isManualMode) {
+        btnToggleMode.textContent = 'MODO: MANUAL';
+        btnToggleMode.classList.add('manual-active');
+        manualAzInput.disabled = false;
+        manualElInput.disabled = false;
+    } else {
+        btnToggleMode.textContent = 'MODO: AUTOMÁTICO';
+        btnToggleMode.classList.remove('manual-active');
+        manualAzInput.disabled = false;
+        manualElInput.disabled = false;
+    }
+}
+
+btnToggleMode.addEventListener('click', () => {
+    isManualMode = !isManualMode;
+    MilitaryStorage.save('sf_is_manual_mode', isManualMode);
+    updateModeButtonUI();
+    updateSelectedSatellite();
+});
+
 function updateSelectedSatellite() {
     const key = satSelect.value;
     MilitaryStorage.save('sf_selected_sat', key);
@@ -1215,32 +1671,62 @@ function updateSelectedSatellite() {
     sat.tps.forEach((tp, index) => {
         const opt = document.createElement('option');
         opt.value = index;
-        opt.textContent = tp.label;
+        opt.textContent = `${tp.label} (${tp.freq}/${tp.sr}/${tp.pol})`;
         tpPresetSelect.appendChild(opt);
     });
     applySelectedTP();
 
-    if (key === 'manual') {
-        activeTarget.name = 'MANUAL';
-        activeTarget.az = parseFloat(manualAzInput.value) || 269;
-        activeTarget.el = parseFloat(manualElInput.value) || 53;
-        activeTarget.tolAz = 8;
-        activeTarget.tolEl = 8;
-        lnbSkewInput.value = 'Manual';
-        skewDisplay.textContent = 'Manual';
+    if (isManualMode || key === 'manual') {
+        const savedAz = parseFloat(manualAzInput.value);
+        const savedEl = parseFloat(manualElInput.value);
+        const skewVal = lnbSkewInput.value.trim() || sat.customSkew || 'Manual';
+
+        activeTarget = {
+            name: key === 'manual' ? 'MANUAL' : `${sat.name} [MAN]`,
+            az: !isNaN(savedAz) ? savedAz : (sat.fixedAz || 269),
+            el: !isNaN(savedEl) ? savedEl : (sat.fixedEl || 53),
+            skew: skewVal,
+            tolAz: sat.tolAz || 8,
+            tolEl: sat.tolEl || 8
+        };
+        lnbSkewInput.value = skewVal;
+        skewDisplay.textContent = skewVal;
     } else if (sat.isGeo) {
         const calc = calculateGeoAngles(userLat, userLon, sat.satLon);
-        activeTarget = { ...calc, name: sat.name, tolAz: sat.tolAz, tolEl: sat.tolEl };
+        const autoSkewStr = `${calc.skew >= 0 ? '+' : ''}${calc.skew}°`;
+        const finalSkew = sat.customSkew && sat.customSkew !== '' ? sat.customSkew : autoSkewStr;
+
+        activeTarget = {
+            name: sat.name,
+            az: calc.az,
+            el: calc.el,
+            skew: finalSkew,
+            tolAz: sat.tolAz,
+            tolEl: sat.tolEl
+        };
         manualAzInput.value = calc.az;
         manualElInput.value = calc.el;
-        lnbSkewInput.value = `${calc.skew}°`;
-        skewDisplay.textContent = `${calc.skew}°`;
+        lnbSkewInput.value = finalSkew;
+        skewDisplay.textContent = finalSkew;
     } else {
-        activeTarget = { name: sat.name, az: sat.fixedAz, el: sat.fixedEl, skew: 0, tolAz: sat.tolAz, tolEl: sat.tolEl };
+        const finalSkew = sat.customSkew && sat.customSkew !== '' ? sat.customSkew : 'Auto';
+        activeTarget = {
+            name: sat.name,
+            az: sat.fixedAz,
+            el: sat.fixedEl,
+            skew: finalSkew,
+            tolAz: sat.tolAz,
+            tolEl: sat.tolEl
+        };
         manualAzInput.value = sat.fixedAz;
         manualElInput.value = sat.fixedEl;
-        lnbSkewInput.value = 'Auto';
-        skewDisplay.textContent = 'Auto';
+        lnbSkewInput.value = finalSkew;
+        skewDisplay.textContent = finalSkew;
+    }
+
+    if (!isSignalFrozen) {
+        azimuthVal.textContent = `0° / ${activeTarget.az}°`;
+        tiltVal.textContent = `0° / ${activeTarget.el}°`;
     }
 
     updateDishTargetVisual();
@@ -1258,18 +1744,73 @@ function applySelectedTP() {
 }
 
 tpPresetSelect.addEventListener('change', applySelectedTP);
-satSelect.addEventListener('change', updateSelectedSatellite);
+satSelect.addEventListener('change', () => {
+    unfreezeSignal();
+    updateSelectedSatellite();
+});
 
 manualAzInput.addEventListener('input', () => {
-    satSelect.value = 'manual';
+    if (!isManualMode) {
+        isManualMode = true;
+        MilitaryStorage.save('sf_is_manual_mode', true);
+        updateModeButtonUI();
+    }
     activeTarget.az = Math.max(0, Math.min(360, parseFloat(manualAzInput.value) || 0));
 });
 
 manualElInput.addEventListener('input', () => {
-    satSelect.value = 'manual';
+    if (!isManualMode) {
+        isManualMode = true;
+        MilitaryStorage.save('sf_is_manual_mode', true);
+        updateModeButtonUI();
+    }
     activeTarget.el = Math.max(0, Math.min(90, parseFloat(manualElInput.value) || 0));
     updateDishTargetVisual();
     updateObstacleCalc();
+});
+
+lnbSkewInput.addEventListener('input', () => {
+    const val = lnbSkewInput.value.trim();
+    activeTarget.skew = val || '0°';
+    skewDisplay.textContent = activeTarget.skew;
+});
+
+// GUARDAR EDICIÓN DE TP Y SKEW LNB PERMANENTEMENTE
+btnSaveTp.addEventListener('click', () => {
+    const key = satSelect.value;
+    const tpIdx = parseInt(tpPresetSelect.value || 0, 10);
+    const sat = SATELLITE_DB[key];
+
+    const newFreq = parseInt(tpFreq.value, 10) || 11880;
+    const newSr = parseInt(tpSr.value, 10) || 30000;
+    const newPol = tpPol.value || 'H';
+    const newSkew = lnbSkewInput.value.trim();
+
+    if (sat.tps[tpIdx]) {
+        sat.tps[tpIdx].freq = newFreq;
+        sat.tps[tpIdx].sr = newSr;
+        sat.tps[tpIdx].pol = newPol;
+        const baseName = sat.tps[tpIdx].label.split('(')[0].trim();
+        sat.tps[tpIdx].label = `${baseName} (${newFreq} ${newPol})`;
+    }
+
+    sat.customSkew = newSkew;
+    if (key === 'manual' || isManualMode) {
+        sat.fixedAz = parseFloat(manualAzInput.value) || sat.fixedAz;
+        sat.fixedEl = parseFloat(manualElInput.value) || sat.fixedEl;
+    }
+
+    MilitaryStorage.save('sf_custom_sat_db_v2', SATELLITE_DB);
+    updateSelectedSatellite();
+    tpPresetSelect.value = tpIdx;
+    applySelectedTP();
+
+    tpSaveFeedback.textContent = '✅ TP y Skew guardados en memoria';
+    tpSaveFeedback.style.color = '#00ff88';
+    setTimeout(() => {
+        tpSaveFeedback.textContent = 'Edita TP o Skew y guarda cambios';
+        tpSaveFeedback.style.color = '#8a99b8';
+    }, 2500);
 });
 
 function getDishTargetAngle() {
@@ -1291,7 +1832,7 @@ offsetAngleInput.addEventListener('input', () => {
 function updateObstacleCalc() {
     const h = parseFloat(obsHeightInput.value) || 1;
     MilitaryStorage.save('sf_obs_height', obsHeightInput.value);
-    const rad = (activeTarget.el * Math.PI) / 180;
+    const rad = (Math.max(5, activeTarget.el) * Math.PI) / 180;
     const dist = (h / Math.tan(rad)).toFixed(1);
     obsDistanceVal.textContent = `${dist} metros`;
     obsNote.textContent = `Para librar ${activeTarget.name} a ${activeTarget.el}° de elevación`;
@@ -1299,15 +1840,54 @@ function updateObstacleCalc() {
 
 obsHeightInput.addEventListener('input', updateObstacleCalc);
 
+// 7. BITÁCORA OFFLINE (SOPORTE MODO AUTOMÁTICO Y MANUAL + CARGA RÁPIDA)
 function renderSavedSites() {
     const sites = MilitaryStorage.load('starfinder_sites', []);
     savedSitesList.innerHTML = '';
     sites.forEach((s, idx) => {
+        const modeTag = s.mode || 'AUTO';
+        const tpTag = s.tp ? ` | TP: ${s.tp}` : '';
+        const skewTag = s.skew ? ` | Skew: ${s.skew}` : '';
         const li = document.createElement('li');
-        li.innerHTML = `<div><strong>${s.name}</strong><br><small style="color:#8a99b8;">${s.sat} | Az: ${s.az}° El: ${s.el}°</small></div><button class="del-site" onclick="deleteSite(${idx})">✕</button>`;
+        li.innerHTML = `
+            <div>
+                <strong>${s.name}</strong> <span style="color:#ffbe0b;font-size:0.58rem;">[${modeTag}]</span><br>
+                <small style="color:#8a99b8;">${s.sat} | Az:${s.az}° El:${s.el}°${skewTag}${tpTag}</small>
+            </div>
+            <div class="site-actions">
+                <button type="button" class="load-site" onclick="loadSite(${idx})" title="Cargar datos">Cargar</button>
+                <button type="button" class="del-site" onclick="deleteSite(${idx})" title="Eliminar">✕</button>
+            </div>
+        `;
         savedSitesList.appendChild(li);
     });
 }
+
+window.loadSite = function(idx) {
+    const sites = MilitaryStorage.load('starfinder_sites', []);
+    const s = sites[idx];
+    if (!s) return;
+
+    if (s.satKey && SATELLITE_DB[s.satKey]) {
+        satSelect.value = s.satKey;
+    }
+
+    isManualMode = s.mode === 'MANUAL';
+    MilitaryStorage.save('sf_is_manual_mode', isManualMode);
+    updateModeButtonUI();
+
+    manualAzInput.value = s.az;
+    manualElInput.value = s.el;
+    if (s.skew) lnbSkewInput.value = s.skew;
+    if (s.freq) tpFreq.value = s.freq;
+    if (s.sr) tpSr.value = s.sr;
+    if (s.pol) tpPol.value = s.pol;
+
+    unfreezeSignal();
+    updateSelectedSatellite();
+    tpSaveFeedback.textContent = `📂 Cargado: ${s.name} (${s.mode || 'AUTO'})`;
+    tpSaveFeedback.style.color = '#00f2fe';
+};
 
 window.deleteSite = function(idx) {
     const sites = MilitaryStorage.load('starfinder_sites', []);
@@ -1319,16 +1899,35 @@ window.deleteSite = function(idx) {
 btnSaveSite.addEventListener('click', () => {
     const name = siteNameInput.value.trim() || `Zona ${new Date().toLocaleDateString()}`;
     const sites = MilitaryStorage.load('starfinder_sites', []);
-    sites.unshift({ name, sat: activeTarget.name, az: activeTarget.az, el: activeTarget.el, coords: `${userLat.toFixed(3)}, ${userLon.toFixed(3)}` });
+    const currentMode = isManualMode || satSelect.value === 'manual' ? 'MANUAL' : 'AUTO';
+    const currentAz = isSignalFrozen && frozenSnapshot ? frozenSnapshot.targetAz : activeTarget.az;
+    const currentEl = isSignalFrozen && frozenSnapshot ? frozenSnapshot.targetEl : activeTarget.el;
+
+    sites.unshift({
+        name,
+        satKey: satSelect.value,
+        sat: activeTarget.name,
+        mode: currentMode,
+        az: currentAz,
+        el: currentEl,
+        skew: lnbSkewInput.value.trim() || activeTarget.skew,
+        freq: tpFreq.value,
+        sr: tpSr.value,
+        pol: tpPol.value,
+        tp: `${tpFreq.value}/${tpSr.value}/${tpPol.value}`,
+        coords: `${userLat.toFixed(3)}, ${userLon.toFixed(3)}`
+    });
+
     MilitaryStorage.save('starfinder_sites', sites);
     siteNameInput.value = '';
     renderSavedSites();
 });
 
+updateModeButtonUI();
 renderSavedSites();
 updateSelectedSatellite();
 
-// 7. PITIDO Y VIBRACIÓN DESBLOQUEADOS PARA APPCREATOR24
+// 8. PITIDO Y VIBRACIÓN DESBLOQUEADOS
 function unlockAudioAndVibe() {
     try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1376,7 +1975,7 @@ function playSatFinderBeep(quality) {
     } catch (e) {}
 }
 
-// 8. MONITOR DE SEÑAL Y ACTIVACIÓN DE SENSORES
+// 9. MONITOR DE SEÑAL Y ACTIVACIÓN DE SENSORES
 function checkRealSignal() {
     if (!navigator.onLine) {
         signalPercent.textContent = 'Offline';
@@ -1413,51 +2012,132 @@ btnSensors.addEventListener('click', async () => {
     btnSensors.style.background = 'linear-gradient(135deg, #00ff88, #00b4d8)';
 });
 
-// 9. RASTREO DE ORIENTACIÓN, GPS OFFLINE Y CÁMARA AR
+// 10. INDICADOR CARDINAL EN VIVO, AUTO-CAPTURA, CONGELAMIENTO Y CÁMARA AR
+function getCardinalDirection(deg) {
+    const directions = [
+        { min: 337.5, max: 360, label: 'NORTE (N)' },
+        { min: 0, max: 22.5, label: 'NORTE (N)' },
+        { min: 22.5, max: 67.5, label: 'NORESTE (NE)' },
+        { min: 67.5, max: 112.5, label: 'ESTE (E)' },
+        { min: 112.5, max: 157.5, label: 'SURESTE (SE)' },
+        { min: 157.5, max: 202.5, label: 'SUR (S)' },
+        { min: 202.5, max: 247.5, label: 'SUROESTE (SO)' },
+        { min: 247.5, max: 292.5, label: 'OESTE (O)' },
+        { min: 292.5, max: 337.5, label: 'NOROESTE (NO)' }
+    ];
+    for (let i = 0; i < directions.length; i++) {
+        if (deg >= directions[i].min && deg <= directions[i].max) {
+            return `${directions[i].label} ${deg}°`;
+        }
+    }
+    return `NORTE (N) ${deg}°`;
+}
+
+function freezeSignalCapture(snapshot) {
+    isSignalFrozen = true;
+    frozenSnapshot = snapshot;
+    radarSphere.classList.add('frozen-lock');
+    btnUnfreeze.classList.add('visible');
+
+    azimuthVal.textContent = `${snapshot.compass}° / ${snapshot.targetAz}°`;
+    tiltVal.textContent = `${snapshot.skyElevation}° / ${snapshot.targetEl}°`;
+    satQualityBar.style.width = `${snapshot.quality}%`;
+    satQualityText.textContent = `${snapshot.quality}%`;
+    cardinalLiveText.textContent = snapshot.cardinal;
+    satTarget.style.transform = `translate(0px, 0px)`;
+
+    setGuidance(`🔒 SEÑAL CAPTURADA: ${snapshot.name} (${snapshot.quality}%)`, '#00ff88', true);
+    triggerVibe([100, 50, 120]);
+    playSatFinderBeep(99);
+}
+
+function unfreezeSignal() {
+    isSignalFrozen = false;
+    lockHoldFrames = 0;
+    frozenSnapshot = null;
+    radarSphere.classList.remove('frozen-lock');
+    btnUnfreeze.classList.remove('visible');
+    setGuidance('Buscando señal del satélite...', '#00f2fe', false);
+}
+
+btnUnfreeze.addEventListener('click', () => {
+    unlockAudioAndVibe();
+    triggerVibe(35);
+    unfreezeSignal();
+});
+
+let orientationStarted = false;
+
 function startOrientation() {
+    if (orientationStarted) return;
+    orientationStarted = true;
+
     const eventName = 'ondeviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation';
 
     window.addEventListener(eventName, (event) => {
-        let compass = event.webkitCompassHeading || (event.alpha ? (360 - event.alpha) % 360 : 0);
-        compass = Math.round(compass);
+        let compass = event.webkitCompassHeading !== undefined && event.webkitCompassHeading !== null
+            ? event.webkitCompassHeading
+            : (event.alpha !== null ? (360 - event.alpha) % 360 : 0);
+        compass = Math.round((compass + 360) % 360);
 
         const beta = event.beta || 0;
         const gamma = event.gamma || 0;
-
         const skyElevation = Math.max(0, Math.min(90, Math.round(beta - 90)));
-        azimuthVal.textContent = `${compass}° / ${activeTarget.az}°`;
-        tiltVal.textContent = `${skyElevation}° / ${activeTarget.el}°`;
-
-        let diffAz = ((activeTarget.az - compass + 540) % 360) - 180;
-        let diffEl = activeTarget.el - skyElevation;
-
-        const radarX = Math.max(-75, Math.min(75, diffAz * 1.3));
-        const radarY = Math.max(-75, Math.min(75, -diffEl * 1.5));
-        satTarget.style.transform = `translate(${radarX}px, ${radarY}px)`;
-
-        const tiltX = Math.max(-6, Math.min(6, gamma / 6));
-        const tiltY = Math.max(-6, Math.min(6, (beta - 135) / 6));
-        card3D.style.transform = `rotateY(${tiltX}deg) rotateX(${-tiltY}deg)`;
-
-        const azError = Math.abs(diffAz);
-        const elError = Math.abs(diffEl);
-        let azScore = Math.max(0, 100 - (azError / activeTarget.tolAz) * 50);
-        let elScore = Math.max(0, 100 - (elError / activeTarget.tolEl) * 50);
-        let totalQuality = beta < 90 ? 0 : Math.round((azScore + elScore) / 2);
-
-        satQualityBar.style.width = `${totalQuality}%`;
-        satQualityText.textContent = `${totalQuality}%`;
+        const cardinalStr = getCardinalDirection(compass);
 
         const activeViewId = document.querySelector('.view-section.active').id;
 
         if (activeViewId === 'view-radar') {
+            if (isSignalFrozen && frozenSnapshot) {
+                return;
+            }
+
+            cardinalLiveText.textContent = cardinalStr;
+            azimuthVal.textContent = `${compass}° / ${activeTarget.az}°`;
+            tiltVal.textContent = `${skyElevation}° / ${activeTarget.el}°`;
+
+            let diffAz = ((activeTarget.az - compass + 540) % 360) - 180;
+            let diffEl = activeTarget.el - skyElevation;
+
+            const radarX = Math.max(-68, Math.min(68, diffAz * 1.3));
+            const radarY = Math.max(-68, Math.min(68, -diffEl * 1.5));
+            satTarget.style.transform = `translate(${radarX}px, ${radarY}px)`;
+
+            const tiltX = Math.max(-6, Math.min(6, gamma / 6));
+            const tiltY = Math.max(-6, Math.min(6, (beta - 135) / 6));
+            card3D.style.transform = `rotateY(${tiltX}deg) rotateX(${-tiltY}deg)`;
+
+            const azError = Math.abs(diffAz);
+            const elError = Math.abs(diffEl);
+            let azScore = Math.max(0, 100 - (azError / activeTarget.tolAz) * 50);
+            let elScore = Math.max(0, 100 - (elError / activeTarget.tolEl) * 50);
+            let totalQuality = beta < 90 ? 0 : Math.round((azScore + elScore) / 2);
+
+            satQualityBar.style.width = `${totalQuality}%`;
+            satQualityText.textContent = `${totalQuality}%`;
+
             if (beta < 90) {
+                lockHoldFrames = 0;
                 setGuidance('⚠️ APUNTANDO AL SUELO. LEVANTA LA CÁMARA AL CIELO', '#ff3b5c', false);
             } else if (azError <= activeTarget.tolAz && elError <= activeTarget.tolEl) {
+                lockHoldFrames++;
                 setGuidance(`✅ ¡SEÑAL ENGANCHADA! ${activeTarget.name} (${totalQuality}%)`, '#00ff88', true);
                 triggerVibe(80);
                 playSatFinderBeep(totalQuality);
+
+                if (totalQuality >= 90 && lockHoldFrames >= 12) {
+                    freezeSignalCapture({
+                        name: activeTarget.name,
+                        compass: compass,
+                        targetAz: activeTarget.az,
+                        skyElevation: skyElevation,
+                        targetEl: activeTarget.el,
+                        quality: totalQuality,
+                        cardinal: cardinalStr
+                    });
+                }
             } else {
+                lockHoldFrames = 0;
                 let msg = '';
                 if (azError > activeTarget.tolAz) msg += diffAz > 0 ? '➡️ DERECHA ' : '⬅️ IZQUIERDA ';
                 if (elError > activeTarget.tolEl) msg += diffEl > 0 ? '⬆️ SUBE MÁS' : '⬇️ BAJA UN POCO';
@@ -1469,6 +2149,7 @@ function startOrientation() {
             }
         }
 
+        // VISTA 2: MODO PLATO
         const dishAngle = Math.max(0, Math.min(90, +(90 - Math.abs(beta)).toFixed(1)));
         const dishMeta = getDishTargetAngle();
         const dishDiff = Math.abs(dishAngle - dishMeta);
@@ -1496,6 +2177,7 @@ function startOrientation() {
             }
         }
 
+        // VISTA 3: NIVELADOR DE MÁSTIL
         const tiltLateral = +(gamma).toFixed(1);
         const tiltFrontal = Math.abs(beta) > 45 ? +(beta - 90).toFixed(1) : +(beta).toFixed(1);
 
@@ -1542,7 +2224,9 @@ function startGPS() {
                 MilitaryStorage.save('sf_last_gps', { lat: userLat, lon: userLon });
                 gpsVal.textContent = `${userLat.toFixed(4)}, ${userLon.toFixed(4)}`;
                 gpsZoneLabel.textContent = 'ZONA: GPS EN TIEMPO REAL ACTIVO';
-                updateSelectedSatellite();
+                if (!isManualMode) {
+                    updateSelectedSatellite();
+                }
             },
             () => {
                 gpsZoneLabel.textContent = 'ZONA: GPS GUARDADO OFFLINE';
@@ -1552,31 +2236,481 @@ function startGPS() {
     }
 }
 
+// CÁMARA AR CON VISUALIZACIÓN CLARA DEL CIELO
 btnCamera.addEventListener('click', async () => {
     unlockAudioAndVibe();
     if (!cameraActive) {
         try {
             stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: { ideal: 'environment' } }
+                video: { facingMode: { ideal: 'environment' } },
+                audio: false
             });
             cameraFeed.srcObject = stream;
+            
+                       await cameraFeed.play();
             cameraFeed.classList.add('active');
+            spaceOverlay.classList.add('camera-mode');
+            card3D.classList.add('camera-mode');
             cameraActive = true;
             btnCamera.textContent = '📷 CÁMARA AR: ON';
+            btnCamera.style.borderColor = '#00ff88';
+            btnCamera.style.color = '#00ff88';
         } catch (err) {
             alert('Activa el permiso de cámara en la configuración de la App.');
         }
     } else {
         if (stream) stream.getTracks().forEach(t => t.stop());
+        cameraFeed.srcObject = null;
         cameraFeed.classList.remove('active');
+        spaceOverlay.classList.remove('camera-mode');
+        card3D.classList.remove('camera-mode');
         cameraActive = false;
         btnCamera.textContent = '📷 CÁMARA AR: OFF';
+        btnCamera.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+        btnCamera.style.color = '#f0f4ff';
     }
 });
+
+
+
+
+
+
+
+// 11. BLINDAJE DE PANTALLA SIEMPRE ACTIVA (WAKELOCK + RESPALDO CAMPO/SOL)
+(function initFieldWakeLockShield() {
+    let wakeInterval = null;
+
+    function activateScreenKeepAlive() {
+        if (typeof enableWakeLock === 'function' && !keepScreenOn) {
+            enableWakeLock();
+        }
+        if (!wakeInterval) {
+            wakeInterval = setInterval(() => {
+                if (keepScreenOn && document.visibilityState === 'visible') {
+                    if ('wakeLock' in navigator && !wakeLock) {
+                        navigator.wakeLock.request('screen').then(wl => {
+                            wakeLock = wl;
+                        }).catch(() => {});
+                    }
+                    window.dispatchEvent(new Event('mousemove'));
+                }
+            }, 15000);
+        }
+    }
+
+    document.addEventListener('pointerdown', activateScreenKeepAlive, { once: true });
+    document.addEventListener('touchstart', activateScreenKeepAlive, { once: true });
+    if (btnSensors) {
+        btnSensors.addEventListener('click', activateScreenKeepAlive);
+    }
+})();
+
+// 12. SELECTOR OFFLINE COMPLETO (TODOS LOS ESTADOS DE VENEZUELA, ZONAS MINERAS E INTERNACIONAL)
+(function initOfflineFieldSurvival() {
+    const FIELD_ZONES = [
+        { name: '📍 GPS Satelital Automático (Tiempo Real)', lat: null, lon: null },
+        { name: '🇻🇪 Bolívar - Ciudad Bolívar / La Sabanita', lat: 8.1222, lon: -63.5497 },
+        { name: '🇻🇪 Bolívar - Puerto Ordaz / San Félix', lat: 8.2975, lon: -62.7114 },
+        { name: '⛏️ Bolívar - El Callao / Guasipati / Tumeremo', lat: 7.3486, lon: -61.8236 },
+        { name: '⛏️ Bolívar - Km 88 / Las Claritas / Santa Elena', lat: 6.1850, lon: -61.4820 },
+        { name: '🇻🇪 Bolívar - Upata / Caicara del Orinoco', lat: 8.0167, lon: -62.4000 },
+        { name: '🇻🇪 Amazonas - Puerto Ayacucho / Río Negro', lat: 5.6639, lon: -67.6236 },
+        { name: '🇻🇪 Anzoátegui - Barcelona / Puerto La Cruz / El Tigre', lat: 10.1362, lon: -64.6862 },
+        { name: '🇻🇪 Apure - San Fernando / Guasdualito', lat: 7.8878, lon: -67.4724 },
+        { name: '🇻🇪 Aragua - Maracay / La Victoria / Turmero', lat: 10.2469, lon: -67.5958 },
+        { name: '🇻🇪 Barinas - Barinas / Socopó / Santa Bárbara', lat: 8.6226, lon: -70.2075 },
+        { name: '🇻🇪 Carabobo - Valencia / Puerto Cabello / Guacara', lat: 10.1620, lon: -68.0077 },
+        { name: '🇻🇪 Cojedes - San Carlos / Tinaquillo', lat: 9.6612, lon: -68.5827 },
+        { name: '🇻🇪 Delta Amacuro - Tucupita / Pedernales', lat: 9.0581, lon: -62.0500 },
+        { name: '🇻🇪 Distrito Capital - Caracas / El Junquito', lat: 10.4806, lon: -66.9036 },
+        { name: '🇻🇪 Falcón - Coro / Punto Fijo / Tucacas', lat: 11.4045, lon: -69.6734 },
+        { name: '🇻🇪 Guárico - San Juan de los Morros / Calabozo / Valle de la Pascua', lat: 9.9115, lon: -67.3538 },
+        { name: '🇻🇪 La Guaira - Maiquetía / Catia La Mar', lat: 10.5990, lon: -66.9346 },
+        { name: '🇻🇪 Lara - Barquisimeto / Carora / El Tocuyo', lat: 10.0678, lon: -69.3474 },
+        { name: '🇻🇪 Mérida - Mérida / El Vigía / Tovar', lat: 8.5897, lon: -71.1561 },
+        { name: '🇻🇪 Miranda - Los Teques / Guarenas / Higuerote', lat: 10.3445, lon: -67.0433 },
+        { name: '🇻🇪 Monagas - Maturín / Punta de Mata / Caripe', lat: 9.7457, lon: -63.1832 },
+        { name: '🇻🇪 Nueva Esparta - Isla de Margarita / Porlamar', lat: 10.9577, lon: -63.8697 },
+        { name: '🇻🇪 Portuguesa - Guanare / Acarigua / Araure', lat: 9.0418, lon: -69.7421 },
+        { name: '🇻🇪 Sucre - Cumaná / Carúpano / Güiria', lat: 10.4539, lon: -64.1826 },
+        { name: '🇻🇪 Táchira - San Cristóbal / San Antonio / La Fría', lat: 7.7669, lon: -72.2250 },
+        { name: '🇻🇪 Trujillo - Trujillo / Valera / Boconó', lat: 9.3667, lon: -70.4333 },
+        { name: '🇻🇪 Yaracuy - San Felipe / Yaritagua / Nirgua', lat: 10.3399, lon: -68.7425 },
+        { name: '🇻🇪 Zulia - Maracaibo / Cabimas / Ciudad Ojeda / Machiques', lat: 10.6427, lon: -71.6125 },
+        { name: '🇨🇴 Internacional - Colombia (Bogotá / Cúcuta / Medellín)', lat: 4.7110, lon: -74.0721 },
+        { name: '🇧🇷 Internacional - Brasil (Boa Vista / Manaos / Brasilia)', lat: 2.8235, lon: -60.6758 },
+        { name: '🇬🇾 Internacional - Guyana / Caribe / Trinidad', lat: 6.8013, lon: -58.1551 },
+        { name: '🌎 Internacional - Fuera del País (Usar Chip GPS Satelital)', lat: null, lon: null }
+    ];
+
+    const ftaPanels = document.querySelectorAll('#view-fta .fta-panel');
+    const targetPanel = ftaPanels.length > 1 ? ftaPanels[1] : ftaPanels[0];
+
+    if (targetPanel) {
+        const zoneWrapper = document.createElement('div');
+        zoneWrapper.style.marginBottom = '6px';
+
+        const zoneLabel = document.createElement('label');
+        zoneLabel.className = 'section-mini-title';
+        zoneLabel.textContent = '🗺️ ZONA GEOGRÁFICA / RESPALDO OFFLINE (VENEZUELA Y EXTERIOR)';
+
+        const zoneSelect = document.createElement('select');
+        zoneSelect.id = 'offline-zone-select';
+        zoneSelect.className = 'sat-dropdown small-select';
+        zoneSelect.style.borderColor = '#00ff88';
+        zoneSelect.style.color = '#00ff88';
+
+        FIELD_ZONES.forEach((z, idx) => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = z.name;
+            zoneSelect.appendChild(opt);
+        });
+
+        zoneWrapper.appendChild(zoneLabel);
+        zoneWrapper.appendChild(zoneSelect);
+        targetPanel.insertBefore(zoneWrapper, targetPanel.firstChild);
+
+        const savedZoneIdx = MilitaryStorage.load('sf_offline_zone_idx', '0');
+        zoneSelect.value = savedZoneIdx;
+
+        function applyFieldZone(idx) {
+            const zone = FIELD_ZONES[idx];
+            if (!zone) return;
+            MilitaryStorage.save('sf_offline_zone_idx', String(idx));
+
+            if (zone.lat !== null && zone.lon !== null) {
+                userLat = zone.lat;
+                userLon = zone.lon;
+                MilitaryStorage.save('sf_last_gps', { lat: userLat, lon: userLon });
+                if (gpsVal) gpsVal.textContent = `${userLat.toFixed(4)}, ${userLon.toFixed(4)}`;
+                if (gpsZoneLabel) gpsZoneLabel.textContent = `ZONA OFFLINE: ${zone.name.replace(/^[^\w]+/, '').toUpperCase()}`;
+                if (typeof updateSelectedSatellite === 'function') updateSelectedSatellite();
+            } else {
+                if (gpsZoneLabel) gpsZoneLabel.textContent = 'ZONA: GPS SATELITAL EN TIEMPO REAL';
+                if (typeof startGPS === 'function') startGPS();
+            }
+        }
+
+        if (savedZoneIdx !== '0') {
+            applyFieldZone(parseInt(savedZoneIdx, 10));
+        }
+
+        zoneSelect.addEventListener('change', () => {
+            applyFieldZone(parseInt(zoneSelect.value, 10));
+        });
+    }
+
+    // Respaldo de emergencia ante cierre o pérdida total de cobertura
+    window.addEventListener('pagehide', () => {
+        MilitaryStorage.save('sf_last_gps', { lat: userLat, lon: userLon });
+        MilitaryStorage.save('sf_custom_sat_db_v2', SATELLITE_DB);
+        MilitaryStorage.save('sf_selected_sat', satSelect.value);
+    });
+})();
+
+
+
+
+
+// 13. ESCUDO DE PERSISTENCIA MILITAR (EVITA QUE ANDROID BORRE LA APP O BITÁCORA)
+(function initMilitaryPersistenceShield() {
+    if (navigator.storage && navigator.storage.persist) {
+        navigator.storage.persist().catch(() => {});
+    }
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+            .then((reg) => {
+                reg.update().catch(() => {});
+            })
+            .catch(() => {});
+    }
+})();
+
+
+
+
+
+
+
+
+
+// 14. SISTEMA DE LICENCIA POR ID ÚNICO + ENVÍO POR CORREO/TELEGRAM + GENERADOR PRIVADO
+(function initCommercialLicenseShield() {
+    const OWNER_PASS = 'SF2026ADMIN';
+    const GENERATOR_PASS = 'SF2026PRO';
+    const OWNER_EMAIL = 'soporte.starfinder6d@gmail.com';
+    const OWNER_CONTACT_LABEL = 'Telegram @StarFinder6D o Correo Electrónico';
+    const SECRET_SALT = 'SF6D_VENEZUELA_ORBITAL_2026_PRO';
+
+    const STORAGE_KEY_ID = 'sf_device_install_id_v1';
+    const STORAGE_KEY_AUTH = 'sf_license_activated_hash_v1';
+    const STORAGE_KEY_LOCKOUT = 'sf_license_lockout_until_v1';
+
+    function getOrCreateDeviceId() {
+        let devId = MilitaryStorage.load(STORAGE_KEY_ID, null);
+        if (!devId) {
+            const randPart = Math.floor(100000 + Math.random() * 900000);
+            const timePart = (Date.now() % 97).toString(36).toUpperCase().padStart(2, '0');
+            devId = `SF-${randPart}${timePart}`;
+            MilitaryStorage.save(STORAGE_KEY_ID, devId);
+        }
+        return devId;
+    }
+
+    function computeLicenseKeyForId(deviceId) {
+        const raw = `${deviceId.trim().toUpperCase()}::${SECRET_SALT}`;
+        let h1 = 0x811c9dc5;
+        let h2 = 0x1b873593;
+
+        for (let i = 0; i < raw.length; i++) {
+            const ch = raw.charCodeAt(i);
+            h1 ^= ch;
+            h1 = Math.imul(h1, 0x01000193);
+            h2 ^= (ch + i * 17);
+            h2 = Math.imul(h2, 0x85ebca6b);
+        }
+
+        const partA = (h1 >>> 0).toString(36).toUpperCase().padStart(4, 'X').slice(0, 4);
+        const partB = (h2 >>> 0).toString(36).toUpperCase().padStart(4, '9').slice(0, 4);
+        return `${partA}-${partB}`;
+    }
+
+    function openOwnerGeneratorModal() {
+        if (document.getElementById('sf-owner-modal')) return;
+
+        const modal = document.createElement('div');
+        modal.id = 'sf-owner-modal';
+        modal.style.cssText = 'position:fixed;inset:0;z-index:100000;background:rgba(4,7,16,0.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:16px;';
+
+        modal.innerHTML = `
+            <div style="width:100%;max-width:350px;background:rgba(14,21,42,0.98);border:1.5px solid #00ff88;border-radius:20px;padding:18px 16px;box-shadow:0 0 35px rgba(0,255,136,0.3);text-align:center;color:#f0f4ff;">
+                <div style="font-size:1.6rem;margin-bottom:4px;">🔑</div>
+                <h3 style="font-size:0.95rem;font-weight:900;color:#00ff88;letter-spacing:0.6px;margin-bottom:4px;">GENERADOR MAESTRO DE LICENCIAS</h3>
+                <p style="font-size:0.66rem;color:#8a99b8;margin-bottom:10px;">Pega el ID que te envió el cliente para crear su clave única.</p>
+
+                <input type="text" id="sf-modal-client-id" placeholder="Ej: SF-849201A4" autocomplete="off"
+                    style="width:100%;padding:9px;border-radius:10px;background:rgba(0,0,0,0.6);border:1px solid #00ff88;color:#fff;font-size:0.88rem;font-weight:800;text-transform:uppercase;text-align:center;outline:none;margin-bottom:8px;">
+
+                <button type="button" id="sf-modal-gen-btn"
+                    style="width:100%;padding:9px;border-radius:10px;border:none;background:linear-gradient(135deg,#00ff88,#00b4d8);color:#030712;font-size:0.78rem;font-weight:900;cursor:pointer;">
+                    ⚡ GENERAR CLAVE ÚNICA
+                </button>
+
+                <div id="sf-modal-result-box" style="display:none;margin-top:10px;background:rgba(0,255,136,0.12);border:1px solid #00ff88;border-radius:10px;padding:9px;">
+                    <span style="display:block;font-size:0.6rem;color:#8a99b8;">CLAVE PARA ENVIAR AL CLIENTE:</span>
+                    <strong id="sf-modal-key-text" style="display:block;font-size:1.2rem;color:#00ff88;letter-spacing:1.8px;margin:4px 0;user-select:all;"></strong>
+                    <button type="button" id="sf-modal-copy-btn" style="width:auto;padding:4px 12px;font-size:0.66rem;border-radius:7px;background:#00ff88;color:#030712;font-weight:900;">📋 COPIAR CLAVE</button>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:14px;">
+                    <button type="button" id="sf-modal-lock-btn" style="padding:8px;border-radius:9px;background:rgba(255,59,92,0.2);border:1px solid #ff3b5c;color:#ff3b5c;font-size:0.68rem;font-weight:800;">🔒 BLOQUEAR MI APP</button>
+                    <button type="button" id="sf-modal-close-btn" style="padding:8px;border-radius:9px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:0.68rem;font-weight:800;">✕ CERRAR</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const clientIn = document.getElementById('sf-modal-client-id');
+        const genBtn = document.getElementById('sf-modal-gen-btn');
+        const resBox = document.getElementById('sf-modal-result-box');
+        const keyText = document.getElementById('sf-modal-key-text');
+        const copyBtn = document.getElementById('sf-modal-copy-btn');
+        const lockBtn = document.getElementById('sf-modal-lock-btn');
+        const closeBtn = document.getElementById('sf-modal-close-btn');
+
+        genBtn.addEventListener('click', () => {
+            const idVal = clientIn.value.trim().toUpperCase();
+            if (idVal.length < 5) {
+                clientIn.style.borderColor = '#ff3b5c';
+                return;
+            }
+            clientIn.style.borderColor = '#00ff88';
+            keyText.textContent = computeLicenseKeyForId(idVal);
+            resBox.style.display = 'block';
+        });
+
+        copyBtn.addEventListener('click', () => {
+            if (navigator.clipboard && keyText.textContent) {
+                navigator.clipboard.writeText(keyText.textContent).catch(() => {});
+            }
+            copyBtn.textContent = '✅ ¡COPIADA!';
+            setTimeout(() => { copyBtn.textContent = '📋 COPIAR CLAVE'; }, 2000);
+        });
+
+        lockBtn.addEventListener('click', () => {
+            MilitaryStorage.save(STORAGE_KEY_AUTH, null);
+            modal.remove();
+            showLockScreen();
+        });
+
+        closeBtn.addEventListener('click', () => modal.remove());
+    }
+
+    function injectOwnerMenuButton() {
+        if (document.getElementById('sf-owner-menu-btn')) return;
+        const drawerFooter = document.querySelector('.drawer-footer');
+        if (!drawerFooter) return;
+
+        const ownerBtn = document.createElement('button');
+        ownerBtn.id = 'sf-owner-menu-btn';
+        ownerBtn.type = 'button';
+        ownerBtn.textContent = '🔑 GENERADOR DE LICENCIAS';
+        ownerBtn.style.cssText = 'width:100%;margin-bottom:7px;padding:7px;border-radius:9px;background:linear-gradient(135deg,rgba(0,255,136,0.22),rgba(0,242,254,0.22));border:1px solid #00ff88;color:#00ff88;font-size:0.68rem;font-weight:900;cursor:pointer;';
+
+        ownerBtn.addEventListener('click', () => {
+            if (typeof toggleDrawer === 'function') toggleDrawer(false);
+            openOwnerGeneratorModal();
+        });
+
+        drawerFooter.insertBefore(ownerBtn, drawerFooter.firstChild);
+    }
+
+    const currentDeviceId = getOrCreateDeviceId();
+    const expectedClientKey = computeLicenseKeyForId(currentDeviceId);
+    const savedAuth = MilitaryStorage.load(STORAGE_KEY_AUTH, null);
+
+    if (savedAuth === `OWNER_${OWNER_PASS}`) {
+        injectOwnerMenuButton();
+        return;
+    }
+
+    if (savedAuth === expectedClientKey) {
+        return;
+    }
+
+    function showLockScreen() {
+        if (document.getElementById('sf-license-overlay')) return;
+
+        const mailSubject = encodeURIComponent(`Activación StarFinder 6D - ID: ${currentDeviceId}`);
+        const mailBody = encodeURIComponent(
+            `Hola, solicito mi clave de activación para StarFinder 6D.\n\n` +
+            `• ID Único de mi Equipo: ${currentDeviceId}\n` +
+            `• Adjunto comprobante de pago.\n\nGracias.`
+        );
+        const mailtoLink = `mailto:${OWNER_EMAIL}?subject=${mailSubject}&body=${mailBody}`;
+
+        const overlay = document.createElement('div');
+        overlay.id = 'sf-license-overlay';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(4,7,16,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:16px;';
+
+        overlay.innerHTML = `
+            <div style="width:100%;max-width:355px;background:rgba(14,21,42,0.96);border:1.5px solid #00f2fe;border-radius:20px;padding:16px;box-shadow:0 0 35px rgba(0,242,254,0.3);text-align:center;color:#f0f4ff;">
+                <div style="font-size:1.8rem;margin-bottom:3px;">🔒</div>
+                <h2 style="font-size:0.98rem;font-weight:900;color:#00f2fe;letter-spacing:0.8px;margin-bottom:4px;">ACTIVACIÓN STARFINDER 6D</h2>
+                <p style="font-size:0.68rem;color:#8a99b8;margin-bottom:10px;line-height:1.35;">
+                    Envía tu <strong style="color:#fff;">ID de Equipo</strong> y comprobante de pago por <strong style="color:#00f2fe;">${OWNER_CONTACT_LABEL}</strong> para recibir tu clave.
+                </p>
+
+                <div style="background:rgba(0,0,0,0.55);border:1px dashed #ffbe0b;border-radius:10px;padding:8px;margin-bottom:10px;">
+                    <span style="display:block;font-size:0.58rem;color:#8a99b8;font-weight:700;">ID ÚNICO DE ESTE EQUIPO:</span>
+                    <strong style="display:block;font-size:1.15rem;font-weight:900;color:#ffbe0b;letter-spacing:1.5px;margin:2px 0;user-select:all;">${currentDeviceId}</strong>
+                    <div style="display:flex;gap:5px;justify-content:center;margin-top:5px;">
+                        <button type="button" id="sf-copy-dev-id" style="width:auto;padding:4px 9px;font-size:0.62rem;border-radius:6px;background:rgba(255,190,11,0.2);color:#ffbe0b;border:1px solid #ffbe0b;font-weight:800;">📋 COPIAR ID</button>
+                       
+                                               <a href="${mailtoLink}" style="display:inline-flex;align-items:center;padding:4px 9px;font-size:0.62rem;border-radius:6px;background:rgba(0,242,254,0.2);color:#00f2fe;border:1px solid #00f2fe;font-weight:800;text-decoration:none;">✉️ ENVIAR POR CORREO</a>
+                    </div>
+                </div>
+
+                <input type="text" id="sf-license-input" placeholder="Ingresa tu clave de activación" autocomplete="off"
+                    style="width:100%;padding:10px;border-radius:10px;background:rgba(255,255,255,0.08);border:1px solid #00f2fe;color:#ffffff;font-size:0.9rem;font-weight:800;text-align:center;text-transform:uppercase;letter-spacing:1px;outline:none;margin-bottom:8px;">
+
+                <div id="sf-license-msg" style="min-height:16px;font-size:0.68rem;font-weight:700;color:#ff3b5c;margin-bottom:8px;"></div>
+
+                <button type="button" id="sf-license-submit"
+                    style="width:100%;padding:10px;border-radius:10px;border:none;background:linear-gradient(135deg,#00f2fe,#0072ff);color:#030712;font-size:0.8rem;font-weight:900;cursor:pointer;box-shadow:0 4px 15px rgba(0,242,254,0.35);">
+                    🔓 DESBLOQUEAR APLICACIÓN
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        const inputEl = document.getElementById('sf-license-input');
+        const submitBtn = document.getElementById('sf-license-submit');
+        const msgEl = document.getElementById('sf-license-msg');
+        const copyIdBtn = document.getElementById('sf-copy-dev-id');
+        let failedAttempts = 0;
+
+        copyIdBtn.addEventListener('click', () => {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(currentDeviceId).catch(() => {});
+            }
+            copyIdBtn.textContent = '✅ ID COPIADO';
+            setTimeout(() => { copyIdBtn.textContent = '📋 COPIAR ID'; }, 2000);
+        });
+
+        function verifyActivation() {
+            const now = Date.now();
+            const lockUntil = parseInt(MilitaryStorage.load(STORAGE_KEY_LOCKOUT, '0'), 10);
+            if (lockUntil > now) {
+                const secsLeft = Math.ceil((lockUntil - now) / 1000);
+                msgEl.style.color = '#ff3b5c';
+                msgEl.textContent = `⏳ Bloqueado por seguridad. Espera ${secsLeft}s`;
+                return;
+            }
+
+            const entered = inputEl.value.trim().toUpperCase();
+            if (!entered) {
+                msgEl.style.color = '#ffbe0b';
+                msgEl.textContent = '⚠️ Ingresa una clave para continuar';
+                return;
+            }
+
+            if (entered === OWNER_PASS) {
+                MilitaryStorage.save(STORAGE_KEY_AUTH, `OWNER_${OWNER_PASS}`);
+                injectOwnerMenuButton();
+                msgEl.style.color = '#00ff88';
+                msgEl.textContent = '✅ BIENVENIDO PROPIETARIO';
+                setTimeout(() => overlay.remove(), 400);
+                return;
+            }
+
+            if (entered === GENERATOR_PASS) {
+                inputEl.value = '';
+                openOwnerGeneratorModal();
+                return;
+            }
+
+            if (entered === expectedClientKey) {
+                MilitaryStorage.save(STORAGE_KEY_AUTH, expectedClientKey);
+                msgEl.style.color = '#00ff88';
+                msgEl.textContent = '✅ ¡LICENCIA ACTIVADA EXITOSAMENTE!';
+                setTimeout(() => overlay.remove(), 450);
+                return;
+            }
+
+            failedAttempts++;
+            if (failedAttempts >= 5) {
+                MilitaryStorage.save(STORAGE_KEY_LOCKOUT, String(Date.now() + 300000));
+                failedAttempts = 0;
+                msgEl.style.color = '#ff3b5c';
+                msgEl.textContent = '🚫 5 intentos fallidos. Bloqueado 5 minutos.';
+            } else {
+                msgEl.style.color = '#ff3b5c';
+                msgEl.textContent = `❌ Clave inválida para este equipo (${failedAttempts}/5)`;
+            }
+        }
+
+        submitBtn.addEventListener('click', verifyActivation);
+        inputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') verifyActivation();
+        });
+    }
+
+    showLockScreen();
+})();
+ 
+
 </script>
 </body>
 </html>
 
+
+   
 
 
         

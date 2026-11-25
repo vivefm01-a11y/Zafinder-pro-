@@ -1,0 +1,96 @@
+📘 MANUAL DE USUARIO OFICIAL — STARFINDER 6D SUITE
+
+Bienvenido a StarFinder 6D, tu herramienta profesional de precisión orbital para apuntado de antenas satelitales (Internet Starlink y TV Satelital FTA / Operadoras) en campo, ciudad o zonas sin cobertura de internet.
+
+🔐 1. ACTIVACIÓN DE TU LICENCIA (PRIMER USO)
+
+Al abrir la aplicación por primera vez verás una ventana de seguridad con tu ID Único de Equipo (por ejemplo: SF-849201A4).
+
+Pasos para activar tu aplicación:
+
+Envía tu ID de Equipo y comprobante de pago:
+
+Toca el botón ✉️ ENVIAR POR CORREO (se abrirá tu aplicación de correo con la dirección del soporte y tu ID ya escritos; solo adjunta tu comprobante de pago y envíalo).
+
+También puedes tocar 📋 COPIAR ID si deseas enviarlo por Telegram o mensaje directo.
+
+Recibe tu Clave Única:
+
+Una vez verificado tu pago, recibirás por la misma vía una Clave de Activación Única de 8 caracteres (ejemplo: K9X4-7M2P).
+
+Desbloquea tu aplicación:
+
+Escribe o pega la clave en el recuadro central y presiona 🔓 DESBLOQUEAR APLICACIÓN.
+
+¡Listo! Tu licencia quedará activa de forma permanente en ese teléfono sin necesidad de internet.
+
+⚠️ Nota Importante de Seguridad: Cada clave funciona exclusivamente en el teléfono que generó ese ID. Si cambias de equipo o desinstalas la aplicación, el sistema generará un ID nuevo y requerirá una nueva activación.
+
+🛰️ 2. GUÍA DE FUNCIONES PASO A PASO
+
+A. Pantalla Principal: Radar 6D & Cámara AR
+
+Es el centro de rastreo en tiempo real para localizar el satélite en el cielo.
+
+Selecciona el Satélite: En el menú desplegable superior elige el satélite deseado (ej. Intelsat 35e 34.5°W para canales nacionales FTA de Venezuela, Amazonas 61°W, Starlink, SimpleTV, CANTV, etc.).
+
+Activa los Sensores: Presiona el botón azul ACTIVAR SENSORES en la parte inferior y concede los permisos de ubicación y movimiento.
+
+Ubica tu Orientación Cardinal:
+
+Observa el visor superior (🧭 ORIENTACIÓN EN VIVO) y las letras exteriores del radar (N Norte, S Sur, E Este, O Oeste).
+
+Gira tu cuerpo hacia el rumbo indicado en AZIMUT (TÚ / META) e inclina el teléfono hacia el cielo según ELEVACIÓN CIELO.
+
+Cámara AR (Realidad Aumentada):
+
+Presiona 📷 CÁMARA AR: OFF para encender la cámara trasera y visualizar el cielo real detrás del radar, verificando que no haya árboles o edificios tapando el punto exacto del satélite.
+
+Auto-Captura y Congelamiento de Señal:
+
+Cuando alinees el círculo central con el icono del satélite y alcances más del 90% de calidad, el teléfono vibrará, emitirá un pitido continuo y congelará automáticamente la pantalla (🔒 SEÑAL CAPTURADA) para que puedas leer los grados con calma.
+
+Para volver a rastrear, presiona el botón naranja 🔄 NORMAL.
+
+B. Menú Técnico Lateral (☰)
+
+Toca las tres líneas horizontales arriba a la izquierda para acceder a las herramientas profesionales de instalación:
+
+1. 📡 Modo Plato / Antena (Inclinómetro Offset)
+
+Apoya el teléfono de canto sobre el borde frontal o trasero del plato parabólico.
+
+La aplicación descuenta automáticamente el ángulo Offset de la antena (por defecto 22.5°, editable si tu plato tiene otra medida).
+
+Inclina la antena hasta que la línea amarilla coincida con la verde y aparezca el aviso ✅ ¡PLATO EN ÁNGULO EXACTO!.
+
+2. 🫧 Nivelador de Mástil (Plomada 360°)
+
+Coloca el teléfono plano sobre la punta del tubo o apoyado verticalmente contra el mástil antes de apretar los tornillos.
+
+Ajusta el tubo hasta centrar la burbuja en 0.0° y confirmar ✅ MÁSTIL 100% A PLOMO.
+
+3. 🔓 Banco TP FTA & Bitácora
+
+Transpondedores (TP) y Skew LNB: Consulta los TP cazadores pre-cargados para cada satélite. Puedes editar manualmente la Frecuencia, Symbol Rate, Polarización y Skew LNB, y presionar 💾 GUARDAR TP / SKEW para conservar tus cambios permanentemente.
+
+Modo Automático / Manual: Usa el botón superior para alternar entre cálculo automático por GPS o ingreso manual de Azimut y Elevación.
+
+Bitácora de Zonas / Clientes: Guarda tus instalaciones con nombre propio (ej. Finca Norte / Cliente Pérez) y vuelve a cargarlas en cualquier momento con el botón Cargar.
+
+Respaldo Offline de Regiones: Si trabajas en minas, bosques cerrados o zonas donde el GPS tarda en fijar señal, selecciona manualmente tu estado o región en el desplegable 🗺️ ZONA GEOGRÁFICA / RESPALDO OFFLINE.
+
+4. 🌲 Radar de Obstáculos
+
+Escribe la altura aproximada (en metros) de cualquier árbol, pared o techo que esté frente a la antena.
+
+La calculadora te indicará la distancia mínima en metros a la que debes alejar la antena para que el obstáculo no bloquee la señal del satélite.
+
+💡 CONSEJOS PARA MEJOR PRECISIÓN EN CAMPO
+
+Aléjate brevemente del metal al usar la brújula: El hierro del plato o el LNB puede desviar el sensor magnético del teléfono. Toma el rumbo de Azimut a medio metro del plato y luego usa el Modo Plato para ajustar la elevación.
+
+Modo Sin Internet (100% Offline): Una vez abierta la aplicación por primera vez, queda guardada en la memoria interna de tu teléfono. Puedes trabajar en montañas, fincas o minas sin señal celular ni datos móviles.
+
+Tienes el manual completo listo para copiar y entregar en PDF o mensaje a tus clientes. Si deseas que lo adaptemos a un formato más corto para WhatsApp o agregar tus datos de contacto específicos, solo dime y lo preparamos.
+
