@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>StarFinder 6D - Suite Satelital Pro</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+  :root {
+    --bg-dark: #060913;
+    --glass: rgba(14, 21, 42, 0.85);
+    --border-glow: rgba(0, 242, 254, 0.35);
+    --cyan: #00f2fe;
+    --purple: #7b2cbf;
+    --green: #00ff88;
+    --red: #ff3b5c;
+    --amber: #ffbe0b;
+    --text-main: #f0f4ff;
+    --text-muted: #8a99b8;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+html, body {
+    width: 100%;
+    height: 100dvh;
+    max-width: 100%;
+    overflow: hidden;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+}
+
+#camera-feed {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+#camera-feed.active { opacity: 0.65; }
+
+.space-overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 50% 20%, rgba(123, 44, 191, 0.28), rgba(6, 9, 19, 0.94));
+    z-index: -1;
+}
+
+/* MENÚ HAMBURGUESA LATERAL */
+.drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(4px);
+    z-index: 90;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.drawer-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.side-drawer {
+    position: fixed;
+    top: 0;
+    left: -290px;
+    width: 270px;
+    height: 100dvh;
+    background: rgba(10, 15, 32, 0.97);
+    border-right: 1px solid var(--cyan);
+    box-shadow: 10px 0 35px rgba(0, 242, 254, 0.25);
+    z-index: 100;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: left 0.3s ease;
+}
+
+.side-drawer.open { left: 0; }
+
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.drawer-header .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.drawer-header h2 {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    color: var(--cyan);
+}
+
+.close-drawer {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 1rem;
+}
+
+.drawer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+    padding: 9px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid transparent;
+    color: var(--text-main);
+}
+
+.nav-item.active {
+    background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(123, 44, 191, 0.28));
+    border-color: var(--cyan);
+}
+
+.nav-icon { font-size: 1.2rem; }
+.nav-text { display: flex; flex-direction: column; }
+.nav-text strong { font-size: 0.78rem; }
+.nav-text small { font-size: 0.62rem; color: var(--text-muted); }
+
+.drawer-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 8px;
+    text-align: center;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+}
+
+/* CONTENEDOR PRINCIPAL AJUSTADO AL 100% DE LA PANTALLA SIN SCROLL */
+.app-container {
+    width: 100%;
+    max-width: 420px;
+    height: 100%;
+    max-height: 100%;
+    margin: 0 auto;
+    background: var(--glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glow);
+    border-radius: 22px;
+    padding: 10px 12px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8), inset 0 0 18px rgba(0, 242, 254, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+/* CABECERA PROFESIONAL */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(0, 242, 254, 0.15);
+    flex-shrink: 0;
+}
+
+.left-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hamburger-btn {
+    width: 32px;
+    height: 32px;
+    padding: 7px 6px;
+    background: rgba(0, 242, 254, 0.14);
+    border: 1px solid rgba(0, 242, 254, 0.4);
+    border-radius: 9px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.hamburger-btn span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--cyan);
+    border-radius: 2px;
+}
+
+.brand h1 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+}
+
+.badge {
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    padding: 2px 5px;
+    border-radius: 5px;
+    font-size: 0.6rem;
+    color: #fff;
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 10px var(--green);
+}
+
+.signal-widget {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 4px 8px;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.signal-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 12px;
+}
+
+.bar {
+    width: 2.5px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 2px;
+}
+
+.b1 { height: 25%; }
+.b2 { height: 45%; }
+.b3 { height: 65%; }
+.b4 { height: 85%; }
+.b5 { height: 100%; }
+
+.bar.active {
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan);
+}
+
+.signal-text {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--cyan);
+}
+
+/* SELECTOR DE SATÉLITE */
+.selector-row {
+    width: 100%;
+    margin-bottom: 6px;
+    flex-shrink: 0;
+}
+
+.sat-dropdown {
+    width: 100%;
+    padding: 7px 10px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(10, 18, 38, 0.95), rgba(24, 16, 48, 0.95));
+    color: var(--cyan);
+    border: 1px solid var(--cyan);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.15);
+    font-size: 0.76rem;
+    font-weight: 700;
+    outline: none;
+}
+
+.small-select {
+    font-size: 0.72rem;
+    padding: 6px 8px;
+}
+
+/* VISTAS DINÁMICAS FLEXIBLES */
+.view-section {
+    display: none;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.view-section.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.lock-meter-box {
+    background: rgba(0, 0, 0, 0.38);
+    padding: 5px 8px;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+}
+
+.lock-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+}
+
+#sat-quality-text {
+    color: var(--cyan);
+    font-size: 0.72rem;
+}
+
+.progress-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--red), var(--amber), var(--green));
+    transition: width 0.15s ease-out;
+}
+
+/* RADAR AUTO-ADAPTABLE A LA ALTURA DEL TELÉFONO */
+.radar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    margin: 4px 0;
+}
+
+.radar-sphere {
+    position: relative;
+    width: clamp(135px, 23vh, 185px);
+    height: clamp(135px, 23vh, 185px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 242, 254, 0.1) 0%, rgba(6, 9, 19, 0.88) 75%);
+    border: 2px solid var(--border-glow);
+    box-shadow: 0 0 22px rgba(0, 242, 254, 0.18), inset 0 0 18px rgba(123, 44, 191, 0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.orbit {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px dashed rgba(0, 242, 254, 0.28);
+}
+
+.ring-1 { width: 82%; height: 82%; }
+.ring-2 { width: 54%; height: 54%; border-style: solid; opacity: 0.4; }
+.ring-3 { width: 26%; height: 26%; }
+
+.crosshair::before, .crosshair::after {
+    content: '';
+    position: absolute;
+    background: rgba(0, 242, 254, 0.22);
+}
+.crosshair::before { width: 100%; height: 1px; top: 50%; left: 0; }
+.crosshair::after { width: 1px; height: 100%; left: 50%; top: 0; }
+
+.satellite-target {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.1s linear;
+    z-index: 3;
+}
+
+.sat-icon { font-size: 1.25rem; filter: drop-shadow(0 0 10px var(--cyan)); }
+
+.sat-label {
+    font-size: 0.52rem;
+    font-weight: 800;
+    background: rgba(0, 10, 25, 0.88);
+    border: 1px solid var(--cyan);
+    padding: 1px 4px;
+    border-radius: 4px;
+    color: var(--cyan);
+}
+
+.user-aim {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    border: 2.5px solid var(--red);
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(255, 59, 92, 0.5);
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    z-index: 2;
+}
+
+.alignment-status {
+    margin: 5px 0 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--cyan);
+    text-align: center;
+    background: rgba(0, 242, 254, 0.1);
+    padding: 5px 8px;
+    border-radius: 10px;
+    width: 100%;
+    border: 1px solid rgba(0, 242, 254, 0.25);
+    flex-shrink: 0;
+}
+
+.telemetry-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    margin-bottom: 6px;
+    flex-shrink: 0;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 9px;
+    padding: 5px 7px;
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label { font-size: 0.52rem; color: var(--text-muted); margin-bottom: 1px; }
+.stat-value { font-size: 0.78rem; font-weight: 700; }
+.stat-value.amber { color: var(--amber); }
+.stat-value.small { font-size: 0.66rem; }
+
+/* VISTAS SECUNDARIAS COMPACTAS */
+.tool-banner {
+    background: rgba(0, 242, 254, 0.08);
+    border-left: 3px solid var(--cyan);
+    padding: 6px 8px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.tool-banner strong { font-size: 0.7rem; color: var(--cyan); display: block; margin-bottom: 1px; }
+.tool-banner p { font-size: 0.63rem; color: var(--text-muted); line-height: 1.25; }
+
+.dish-visualizer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 12px;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dish-arc {
+    position: relative;
+    width: 150px;
+    height: 75px;
+    border-top-left-radius: 100px;
+    border-top-right-radius: 100px;
+    border: 2px dashed rgba(0, 242, 254, 0.3);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+
+.dish-target-line, .dish-current-line {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 70px;
+    height: 3px;
+    transform-origin: left center;
+}
+
+.dish-target-line { background: var(--green); box-shadow: 0 0 8px var(--green); transform: rotate(-35deg); }
+.dish-current-line { background: var(--amber); box-shadow: 0 0 8px var(--amber); transform: rotate(0deg); }
+
+.dish-readout { display: flex; flex-direction: column; align-items: center; margin-top: 5px; }
+.big-deg { font-size: 1.4rem; font-weight: 800; color: var(--cyan); }
+.target-deg { font-size: 0.7rem; color: var(--text-muted); }
+.target-deg strong { color: var(--green); }
+
+.offset-config {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 6px 8px;
+    border-radius: 9px;
+    margin-bottom: 6px;
+    font-size: 0.7rem;
+}
+
+.offset-config input {
+    width: 60px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--cyan);
+    color: #fff;
+    padding: 3px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.level-container { display: flex; justify-content: center; align-items: center; margin: 4px 0; }
+
+.level-circle {
+    position: relative;
+    width: clamp(130px, 21vh, 165px);
+    height: clamp(130px, 21vh, 165px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 255, 136, 0.08), rgba(6, 9, 19, 0.9));
+    border: 2px solid var(--cyan);
+    box-shadow: inset 0 0 20px rgba(0, 242, 254, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.level-ring-inner { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.5); }
+.level-cross-h, .level-cross-v { position: absolute; background: rgba(255, 255, 255, 0.15); }
+.level-cross-h { width: 100%; height: 1px; }
+.level-cross-v { width: 1px; height: 100%; }
+
+.bubble-dot {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff, var(--amber));
+    box-shadow: 0 0 15px var(--amber);
+}
+
+.fta-panel {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(0, 242, 254, 0.18);
+    border-radius: 10px;
+    padding: 7px;
+    margin-bottom: 6px;
+}
+
+.section-mini-title { display: block; font-size: 0.58rem; font-weight: 800; color: var(--cyan); margin-bottom: 4px; }
+.fta-grid, .manual-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 5px; }
+.manual-grid { padding-top: 5px; border-top: 1px dashed rgba(255, 255, 255, 0.12); }
+
+.input-box { display: flex; flex-direction: column; }
+.input-box label { font-size: 0.52rem; color: var(--text-muted); margin-bottom: 2px; font-weight: 700; }
+.input-box input, .input-box select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 4px;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.save-row { display: flex; gap: 5px; }
+.save-row input {
+    flex: 1;
+    min-width: 0;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 7px;
+    padding: 5px 7px;
+    color: #fff;
+    font-size: 0.7rem;
+}
+
+.btn-mini { width: auto; padding: 5px 9px; background: var(--cyan); color: #030712; border-radius: 7px; font-size: 0.68rem; }
+
+.saved-list { list-style: none; max-height: 75px; overflow-y: auto; margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
+.saved-list li { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.05); padding: 4px 7px; border-radius: 7px; font-size: 0.68rem; }
+.del-site { width: auto; padding: 2px 6px; background: rgba(255, 59, 92, 0.25); color: var(--red); font-size: 0.65rem; }
+
+.obstacle-result { display: flex; flex-direction: column; align-items: center; background: rgba(0, 242, 254, 0.08); border: 1px solid var(--cyan); padding: 10px; border-radius: 10px; text-align: center; }
+.obstacle-result span { font-size: 0.6rem; color: var(--text-muted); }
+.obstacle-result strong { font-size: 1.35rem; color: var(--green); margin: 3px 0; }
+.obstacle-result small { font-size: 0.64rem; color: var(--cyan); }
+
+/* CONTROLES INFERIORES ANCLADOS SIEMPRE VISIBLES */
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+    padding-top: 2px;
+}
+
+.row-btns { display: grid; grid-template-columns: 1.4fr 1fr; gap: 5px; }
+.row-btns-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+
+button {
+    width: 100%;
+    padding: 9px 6px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.72rem;
+    cursor: pointer;
+}
+
+.btn-primary { background: linear-gradient(135deg, var(--cyan), #0072ff); color: #030712; box-shadow: 0 4px 12px rgba(0, 242, 254, 0.3); }
+.btn-secondary { background: rgba(255, 255, 255, 0.08); color: var(--text-main); border: 1px solid rgba(255, 255, 255, 0.15); }
+</style>
+
+
+
+             
+        
+   
+    
+    
+</head>
+<body>
+
+    <video id="camera-feed" autoplay playsinline muted></video>
+    <div class="space-overlay"></div>
+
+    <!-- MENÚ HAMBURGUESA DESLIZABLE -->
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+    <aside class="side-drawer" id="side-drawer">
+        <div class="drawer-header">
+            <div class="brand">
+                <span class="pulse-dot"></span>
+                <h2>MENÚ TÉCNICO</h2>
+            </div>
+            <button class="close-drawer" id="close-drawer">✕</button>
+        </div>
+
+        <nav class="drawer-nav">
+            <button class="nav-item active" data-view="view-radar">
+                <span class="nav-icon">🛰️</span>
+                <div class="nav-text">
+                    <strong>Radar 6D & Cámara AR</strong>
+                    <small>Apuntado al cielo y SatFinder</small>
+                </div>
+            </button>
+
+            <button class="nav-item" data-view="view-dish">
+                <span class="nav-icon">📡</span>
+                <div class="nav-text">
+                    <strong>Modo Plato / Antena</strong>
+                    <small>Inclinómetro Offset en el plato</small>
+                </div>
+            </button>
+
+            <button class="nav-item" data-view="view-level">
+                <span class="nav-icon">🫧</span>
+                <div class="nav-text">
+                    <strong>Nivelador de Mástil</strong>
+                    <small>Plomada digital circular 0.0°</small>
+                </div>
+            </button>
+
+            <button class="nav-item" data-view="view-fta">
+                <span class="nav-icon">🔓</span>
+                <div class="nav-text">
+                    <strong>Banco TP FTA & Bitácora</strong>
+                    <small>Transpondedores y zonas guardadas</small>
+                </div>
+            </button>
+
+            <button class="nav-item" data-view="view-obstacle">
+                <span class="nav-icon">🌲</span>
+                <div class="nav-text">
+                    <strong>Radar de Obstáculos</strong>
+                    <small>Distancia libre de árboles/minas</small>
+                </div>
+            </button>
+        </nav>
+
+        <div class="drawer-footer">
+            <p>StarFinder 6D Suite v2.1</p>
+            <small>GPS + Cálculo Orbital Offline</small>
+        </div>
+    </aside>
+
+    <!-- CONTENEDOR PRINCIPAL 6D -->
+    <div class="app-container" id="card-3d">
+        <header class="top-bar">
+            <div class="left-header">
+                <button class="hamburger-btn" id="open-drawer" aria-label="Menú">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="brand">
+                    <h1>STARFINDER <span class="badge">6D</span></h1>
+                </div>
+            </div>
+
+            <div class="signal-widget" title="Señal de red móvil / Wi-Fi">
+                <div class="signal-bars" id="signal-bars">
+                    <span class="bar b1"></span>
+                    <span class="bar b2"></span>
+                    <span class="bar b3"></span>
+                    <span class="bar b4"></span>
+                    <span class="bar b5"></span>
+                </div>
+                <span class="signal-text" id="signal-percent">4G</span>
+            </div>
+        </header>
+
+        <!-- SELECTOR GLOBAL DE SATÉLITE -->
+        <div class="selector-row">
+            <select id="sat-select" class="sat-dropdown">
+                <option value="starlink">🛰️ STARLINK (Internet Alta Velocidad)</option>
+                <option value="simpletv">📺 SIMPLE TV (95.0° W - Venezuela)</option>
+                <option value="movistar">📡 MOVISTAR TV (61.0° W - Amazonas)</option>
+                <option value="cantv">🇻🇪 CANTV / VENESAT (78.0° W)</option>
+                <option value="fta_tupac">🔓 FTA TÚPAC KATARI (87.2° W)</option>
+                <option value="fta_hispasat">🔓 FTA HISPASAT (30.0° W)</option>
+                <option value="fta_ses6">🔓 FTA SES-6 (40.5° W)</option>
+                <option value="fta_telstar">🔓 FTA TELSTAR 12 (15.0° W)</option>
+                <option value="fta_intelsat21">🔓 FTA INTELSAT 21 (58.0° W)</option>
+                <option value="manual">⚙️ PERSONALIZADO (Grados Manuales)</option>
+            </select>
+        </div>
+
+        <!-- VISTA 1: RADAR 6D PRINCIPAL -->
+        <div class="view-section active" id="view-radar">
+            <div class="lock-meter-box">
+                <div class="lock-header">
+                    <span id="gps-zone-label">ZONA: CIUDAD BOLÍVAR (GPS)</span>
+                    <span id="sat-quality-text">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="sat-quality-bar"></div>
+                </div>
+            </div>
+
+            <main class="radar-section">
+                <div class="radar-sphere">
+                    <div class="orbit ring-1"></div>
+                    <div class="orbit ring-2"></div>
+                    <div class="orbit ring-3"></div>
+                    <div class="crosshair"></div>
+                    
+                    <div class="satellite-target" id="sat-target">
+                        <div class="sat-icon">🛰️</div>
+                        <span class="sat-label" id="sat-badge-name">STARLINK</span>
+                    </div>
+
+                    <div class="user-aim" id="user-aim"></div>
+                </div>
+
+                <div class="alignment-status" id="alignment-msg">
+                    Presiona "ACTIVAR SENSORES" para rastrear
+                </div>
+            </main>
+
+            <section class="telemetry-grid">
+                <div class="stat-card">
+                    <span class="stat-label">AZIMUT (TÚ / META)</span>
+                    <span class="stat-value" id="azimuth-val">0° / 20°</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">ELEVACIÓN CIELO</span>
+                    <span class="stat-value" id="tilt-val">0° / 58°</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">GIRO LNB (SKEW)</span>
+                    <span class="stat-value amber" id="skew-display">Auto</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">COORDENADAS GPS</span>
+                    <span class="stat-value small" id="gps-val">8.1222, -63.5497</span>
+                </div>
+            </section>
+        </div>
+
+        <!-- VISTA 2: MODO PLATO / ANTENA -->
+        <div class="view-section" id="view-dish">
+            <div class="tool-banner">
+                <strong>📡 MODO CONTACTO EN EL PLATO / MÁSTIL</strong>
+                <p>Apoya el teléfono de canto sobre el borde de la antena parabólica. Ya tiene descontado el ángulo Offset (22.5°).</p>
+            </div>
+
+            <div class="dish-visualizer">
+                <div class="dish-arc">
+                    <div class="dish-target-line" id="dish-target-line"></div>
+                    <div class="dish-current-line" id="dish-current-line"></div>
+                </div>
+                <div class="dish-readout">
+                    <span class="big-deg" id="dish-current-deg">0°</span>
+                    <span class="target-deg">Meta en Plato: <strong id="dish-target-deg">35.5°</strong></span>
+                </div>
+            </div>
+
+            <div class="alignment-status" id="dish-status-msg">
+                Activa los sensores y apoya el teléfono en el plato
+            </div>
+
+            <div class="offset-config">
+                <label>Ángulo Offset de tu antena (°):</label>
+                <input type="number" id="offset-angle-input" value="22.5" step="0.5">
+            </div>
+        </div>
+
+        <!-- VISTA 3: NIVEL DE BURBUJA DIGITAL -->
+        <div class="view-section" id="view-level">
+            <div class="tool-banner">
+                <strong>🫧 NIVELADOR DE MÁSTIL (PLOMADA 360°)</strong>
+                <p>Coloca el teléfono plano sobre la punta del tubo o contra el costado del mástil antes de apretar los tornillos.</p>
+            </div>
+
+            <div class="level-container">
+                <div class="level-circle">
+                    <div class="level-ring-inner"></div>
+                    <div class="level-cross-h"></div>
+                    <div class="level-cross-v"></div>
+                    <div class="bubble-dot" id="bubble-dot"></div>
+                </div>
+            </div>
+
+            <div class="telemetry-grid">
+                <div class="stat-card">
+                    <span class="stat-label">INCLINACIÓN LATERAL (X)</span>
+                    <span class="stat-value" id="level-x-val">0.0°</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">INCLINACIÓN FRONTAL (Y)</span>
+                    <span class="stat-value" id="level-y-val">0.0°</span>
+                </div>
+            </div>
+
+            <div class="alignment-status" id="level-status-msg">
+                Activa los sensores para nivelar el tubo
+            </div>
+        </div>
+
+              <!-- VISTA 4: BANCO TP FTA Y BITÁCORA -->
+        <div class="view-section" id="view-fta">
+            <div class="fta-panel">
+                <label class="section-mini-title">TRANSPONDEDORES PRE-CARGADOS (TP)</label>
+                <select id="tp-preset-select" class="sat-dropdown small-select"></select>
+
+                <div class="fta-grid">
+                    <div class="input-box">
+                        <label>FRECUENCIA</label>
+                        <input type="number" id="tp-freq" value="11880">
+                    </div>
+                    <div class="input-box">
+                        <label>SYMBOL RATE</label>
+                        <input type="number" id="tp-sr" value="30000">
+                    </div>
+                    <div class="input-box">
+                        <label>POLARIZACIÓN</label>
+                        <select id="tp-pol">
+                            <option value="V">Vertical (V)</option>
+                            <option value="H">Horizontal (H)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="manual-grid">
+                    <div class="input-box">
+                        <label>AZIMUT (°)</label>
+                        <input type="number" id="manual-az" min="0" max="360" value="269">
+                    </div>
+                    <div class="input-box">
+                        <label>ELEVACIÓN (°)</label>
+                        <input type="number" id="manual-el" min="0" max="90" value="53">
+                    </div>
+                    <div class="input-box">
+                        <label>SKEW LNB</label>
+                        <input type="text" id="lnb-skew" value="-76°" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fta-panel">
+                <label class="section-mini-title">💾 BITÁCORA DE ZONAS / CLIENTES (OFFLINE)</label>
+                <div class="save-row">
+                    <input type="text" id="site-name-input" placeholder="Ej: Mina El Callao / Finca Norte">
+                    <button id="btn-save-site" class="btn-mini">GUARDAR</button>
+                </div>
+                <ul class="saved-list" id="saved-sites-list"></ul>
+            </div>
+        </div>
+        
+      
+      
+      
+
+        <!-- VISTA 5: CALCULADORA DE OBSTÁCULOS -->
+        <div class="view-section" id="view-obstacle">
+            <div class="tool-banner">
+                <strong>🌲 CALCULADORA DE DESPEJE DE SEÑAL</strong>
+                <p>Calcula cuántos metros debes alejar la antena de un árbol, techo o pared según la elevación del satélite elegido.</p>
+            </div>
+
+            <div class="fta-panel">
+                <div class="input-box" style="margin-bottom:10px;">
+                    <label>ALTURA DEL ÁRBOL / PARED EN METROS (Por encima de la antena)</label>
+                    <input type="number" id="obs-height" value="6" min="1" max="100">
+                </div>
+                <div class="obstacle-result" id="obs-result-box">
+                    <span>DISTANCIA MÍNIMA REQUERIDA:</span>
+                    <strong id="obs-distance-val">3.8 metros</strong>
+                    <small id="obs-note">Para librar el satélite a 58° de elevación</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTONES DE CONTROL INFERIORES -->
+        <footer class="controls">
+            <div class="row-btns">
+                <button id="btn-sensors" class="btn-primary">ACTIVAR SENSORES</button>
+                <button id="btn-beep" class="btn-secondary">🔊 PITIDO: ON</button>
+            </div>
+            <div class="row-btns-equal">
+                <button id="btn-camera" class="btn-secondary">📷 CÁMARA AR: OFF</button>
+                <button id="btn-wakelock" class="btn-secondary">💡 PANTALLA: AUTO</button>
+            </div>
+        </footer>
+    </div>
+
+
+<script>
+
+// 1. REGISTRO SERVICE WORKER (MODO OFFLINE)
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+}
+
+// 2. BANNER SUPERIOR DE ESTADO + VOZ DE GOOGLE
+(function initNetworkBanner() {
+    const appBox = document.getElementById('card-3d');
+    if (!appBox) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'net-status-banner';
+    banner.style.cssText = 'width:100%;padding:4px 8px;border-radius:8px;font-size:0.65rem;font-weight:800;text-align:center;margin-bottom:6px;letter-spacing:0.5px;transition:all 0.3s ease;flex-shrink:0;';
+    appBox.insertBefore(banner, appBox.firstChild);
+
+    let lastState = null;
+
+    function speakStatus(text) {
+        try {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'es-ES';
+                utter.rate = 1.05;
+                window.speechSynthesis.speak(utter);
+            }
+        } catch (e) {}
+    }
+
+    function updateBanner(announce) {
+        const isOnline = navigator.onLine;
+        if (isOnline) {
+            banner.textContent = '🟢 APLICACIÓN CONECTADA A INTERNET';
+            banner.style.background = 'rgba(0, 255, 136, 0.16)';
+            banner.style.color = '#00ff88';
+            banner.style.border = '1px solid #00ff88';
+            if (announce && lastState !== true) speakStatus('Aplicación conectada a internet');
+        } else {
+            banner.textContent = '🔴 APLICACIÓN SIN CONEXIÓN (MODO OFFLINE)';
+            banner.style.background = 'rgba(255, 59, 92, 0.22)';
+            banner.style.color = '#ff3b5c';
+            banner.style.border = '1px solid #ff3b5c';
+            if (announce && lastState !== false) speakStatus('Aplicación sin conexión');
+        }
+        lastState = isOnline;
+    }
+
+    window.addEventListener('online', () => updateBanner(true));
+    window.addEventListener('offline', () => updateBanner(true));
+    setTimeout(() => updateBanner(true), 800);
+})();
+
+// 3. ALMACENAMIENTO REDUNDANTE (LOCALSTORAGE + INDEXEDDB)
+const MilitaryStorage = {
+    save(key, value) {
+        const str = JSON.stringify(value);
+        try { localStorage.setItem(key, str); } catch (e) {}
+        try {
+            const req = indexedDB.open('StarFinderMilitaryDB', 1);
+            req.onupgradeneeded = (e) => e.target.result.createObjectStore('kv');
+            req.onsuccess = (e) => {
+                const db = e.target.result;
+                const tx = db.transaction('kv', 'readwrite');
+                tx.objectStore('kv').put(str, key);
+            };
+        } catch (e) {}
+    },
+    load(key, fallback) {
+        try {
+            const raw = localStorage.getItem(key);
+            if (raw !== null) return JSON.parse(raw);
+        } catch (e) {}
+        return fallback;
+    }
+};
+
+// 4. MENÚ HAMBURGUESA Y PANTALLA SIEMPRE ACTIVA
+const openDrawerBtn = document.getElementById('open-drawer');
+const closeDrawerBtn = document.getElementById('close-drawer');
+const sideDrawer = document.getElementById('side-drawer');
+const drawerBackdrop = document.getElementById('drawer-backdrop');
+const navItems = document.querySelectorAll('.nav-item');
+const viewSections = document.querySelectorAll('.view-section');
+
+function toggleDrawer(open) {
+    sideDrawer.classList.toggle('open', open);
+    drawerBackdrop.classList.toggle('open', open);
+}
+
+openDrawerBtn.addEventListener('click', () => toggleDrawer(true));
+closeDrawerBtn.addEventListener('click', () => toggleDrawer(false));
+drawerBackdrop.addEventListener('click', () => toggleDrawer(false));
+
+navItems.forEach(item => {
+    item.addEventListener('click', () => {
+        navItems.forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
+        const targetView = item.getAttribute('data-view');
+        viewSections.forEach(sec => sec.classList.toggle('active', sec.id === targetView));
+        toggleDrawer(false);
+    });
+});
+
+const btnWakeLock = document.getElementById('btn-wakelock');
+let wakeLock = null;
+let keepScreenOn = false;
+
+async function enableWakeLock() {
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            keepScreenOn = true;
+            btnWakeLock.textContent = '💡 PANTALLA: FIJA';
+            btnWakeLock.style.borderColor = '#00ff88';
+            btnWakeLock.style.color = '#00ff88';
+        }
+    } catch (err) {}
+}
+
+function disableWakeLock() {
+    if (wakeLock) { wakeLock.release(); wakeLock = null; }
+    keepScreenOn = false;
+    btnWakeLock.textContent = '💡 PANTALLA: AUTO';
+    btnWakeLock.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+    btnWakeLock.style.color = '#f0f4ff';
+}
+
+btnWakeLock.addEventListener('click', () => {
+    if (!keepScreenOn) enableWakeLock();
+    else disableWakeLock();
+});
+
+document.addEventListener('visibilitychange', () => {
+    if (wakeLock !== null && document.visibilityState === 'visible' && keepScreenOn) enableWakeLock();
+});
+
+// 5. REFERENCIAS DOM Y RESTAURACIÓN OFFLINE
+const signalBars = document.querySelectorAll('.signal-bars .bar');
+const signalPercent = document.getElementById('signal-percent');
+const azimuthVal = document.getElementById('azimuth-val');
+const tiltVal = document.getElementById('tilt-val');
+const skewDisplay = document.getElementById('skew-display');
+const gpsVal = document.getElementById('gps-val');
+const gpsZoneLabel = document.getElementById('gps-zone-label');
+const alignmentMsg = document.getElementById('alignment-msg');
+const userAim = document.getElementById('user-aim');
+const satTarget = document.getElementById('sat-target');
+const satBadgeName = document.getElementById('sat-badge-name');
+const satQualityBar = document.getElementById('sat-quality-bar');
+const satQualityText = document.getElementById('sat-quality-text');
+const card3D = document.getElementById('card-3d');
+
+const satSelect = document.getElementById('sat-select');
+const tpPresetSelect = document.getElementById('tp-preset-select');
+const tpFreq = document.getElementById('tp-freq');
+const tpSr = document.getElementById('tp-sr');
+const tpPol = document.getElementById('tp-pol');
+const manualAzInput = document.getElementById('manual-az');
+const manualElInput = document.getElementById('manual-el');
+const lnbSkewInput = document.getElementById('lnb-skew');
+
+const dishCurrentDeg = document.getElementById('dish-current-deg');
+const dishTargetDeg = document.getElementById('dish-target-deg');
+const dishTargetLine = document.getElementById('dish-target-line');
+const dishCurrentLine = document.getElementById('dish-current-line');
+const dishStatusMsg = document.getElementById('dish-status-msg');
+const offsetAngleInput = document.getElementById('offset-angle-input');
+
+const bubbleDot = document.getElementById('bubble-dot');
+const levelXVal = document.getElementById('level-x-val');
+const levelYVal = document.getElementById('level-y-val');
+const levelStatusMsg = document.getElementById('level-status-msg');
+
+const siteNameInput = document.getElementById('site-name-input');
+const btnSaveSite = document.getElementById('btn-save-site');
+const savedSitesList = document.getElementById('saved-sites-list');
+const obsHeightInput = document.getElementById('obs-height');
+const obsDistanceVal = document.getElementById('obs-distance-val');
+const obsNote = document.getElementById('obs-note');
+
+const btnSensors = document.getElementById('btn-sensors');
+const btnCamera = document.getElementById('btn-camera');
+const btnBeep = document.getElementById('btn-beep');
+const cameraFeed = document.getElementById('camera-feed');
+
+const savedCoords = MilitaryStorage.load('sf_last_gps', { lat: 8.1222, lon: -63.5497 });
+let userLat = savedCoords.lat;
+let userLon = savedCoords.lon;
+gpsVal.textContent = `${userLat.toFixed(4)}, ${userLon.toFixed(4)}`;
+
+satSelect.value = MilitaryStorage.load('sf_selected_sat', 'starlink');
+offsetAngleInput.value = MilitaryStorage.load('sf_offset_angle', '22.5');
+obsHeightInput.value = MilitaryStorage.load('sf_obs_height', '6');
+
+const SATELLITE_DB = {
+    starlink: { name: 'STARLINK', isGeo: false, fixedAz: 20, fixedEl: 58, tolAz: 22, tolEl: 20, tps: [{ label: 'Banda Ku Automática Starlink', freq: 11700, sr: 0, pol: 'V' }] },
+    simpletv: { name: 'SIMPLE TV (95°W)', isGeo: true, satLon: -95.0, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Cazador Principal (11880 V)', freq: 11880, sr: 30000, pol: 'V' }, { label: 'TP Canales Nacionales (11520 H)', freq: 11520, sr: 30000, pol: 'H' }] },
+    movistar: { name: 'MOVISTAR (61°W)', isGeo: true, satLon: -61.0, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Cazador Amazonas (11884 H)', freq: 11884, sr: 28888, pol: 'H' }, { label: 'TP HD Venezuela (11972 H)', freq: 11972, sr: 28888, pol: 'H' }] },
+    cantv: { name: 'CANTV (78°W)', isGeo: true, satLon: -78.0, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Venesat / C-Ku (11560 H)', freq: 11560, sr: 28800, pol: 'H' }] },
+    fta_tupac: { name: 'FTA TÚPAC (87.2°W)', isGeo: true, satLon: -87.2, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Cazador Fuerte (11670 V)', freq: 11670, sr: 15000, pol: 'V' }, { label: 'TP Canales Libres HD (11560 V)', freq: 11560, sr: 30000, pol: 'V' }] },
+    fta_hispasat: { name: 'FTA HISPASAT (30°W)', isGeo: true, satLon: -30.0, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Cazador América (11884 V)', freq: 11884, sr: 27500, pol: 'V' }, { label: 'TP Internacional FTA (12052 H)', freq: 12052, sr: 27500, pol: 'H' }] },
+    fta_ses6: { name: 'FTA SES-6 (40.5°W)', isGeo: true, satLon: -40.5, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Banda Ku Libre (11800 H)', freq: 11800, sr: 30000, pol: 'H' }] },
+    fta_telstar: { name: 'FTA TELSTAR (15°W)', isGeo: true, satLon: -15.0, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Cazador (11604 V)', freq: 11604, sr: 3300, pol: 'V' }] },
+    fta_intelsat21: { name: 'FTA INTELSAT 21 (58°W)', isGeo: true, satLon: -58.0, tolAz: 8, tolEl: 8, tps: [{ label: 'TP Libre Ku (11920 H)', freq: 11920, sr: 28800, pol: 'H' }] },
+    manual: { name: 'MANUAL / FTA', isGeo: false, fixedAz: 269, fixedEl: 53, tolAz: 8, tolEl: 8, tps: [{ label: 'Transpondedor Personalizado', freq: 11880, sr: 30000, pol: 'V' }] }
+};
+
+let activeTarget = { name: 'STARLINK', az: 20, el: 58, skew: 0, tolAz: 22, tolEl: 20 };
+let beepEnabled = MilitaryStorage.load('sf_beep_enabled', true);
+let audioCtx = null;
+let lastBeepTime = 0;
+let lastVibeTime = 0;
+let cameraActive = false;
+let stream = null;
+btnBeep.textContent = beepEnabled ? '🔊 PITIDO: ON' : '🔇 PITIDO: OFF';
+
+// 6. CÁLCULO ASTRONÓMICO Y ACTUALIZACIÓN DE SATÉLITE
+function calculateGeoAngles(latDeg, lonDeg, satLonDeg) {
+    const rad = Math.PI / 180;
+    const deg = 180 / Math.PI;
+    const lat = latDeg * rad;
+    const dLon = (satLonDeg - lonDeg) * rad;
+
+    let az = Math.atan2(Math.sin(dLon), -Math.cos(dLon) * Math.sin(lat)) * deg;
+    if (az < 0) az += 360;
+
+    const cosPsi = Math.cos(lat) * Math.cos(dLon);
+    const el = Math.atan((cosPsi - 0.15127) / Math.sqrt(1 - cosPsi * cosPsi)) * deg;
+    const skew = Math.atan(Math.sin(dLon) / Math.tan(lat)) * deg;
+
+    return { az: Math.round(az), el: Math.max(5, Math.round(el)), skew: Math.round(skew) };
+}
+
+function updateSelectedSatellite() {
+    const key = satSelect.value;
+    MilitaryStorage.save('sf_selected_sat', key);
+    const sat = SATELLITE_DB[key];
+    satBadgeName.textContent = sat.name;
+
+    tpPresetSelect.innerHTML = '';
+    sat.tps.forEach((tp, index) => {
+        const opt = document.createElement('option');
+        opt.value = index;
+        opt.textContent = tp.label;
+        tpPresetSelect.appendChild(opt);
+    });
+    applySelectedTP();
+
+    if (key === 'manual') {
+        activeTarget.name = 'MANUAL';
+        activeTarget.az = parseFloat(manualAzInput.value) || 269;
+        activeTarget.el = parseFloat(manualElInput.value) || 53;
+        activeTarget.tolAz = 8;
+        activeTarget.tolEl = 8;
+        lnbSkewInput.value = 'Manual';
+        skewDisplay.textContent = 'Manual';
+    } else if (sat.isGeo) {
+        const calc = calculateGeoAngles(userLat, userLon, sat.satLon);
+        activeTarget = { ...calc, name: sat.name, tolAz: sat.tolAz, tolEl: sat.tolEl };
+        manualAzInput.value = calc.az;
+        manualElInput.value = calc.el;
+        lnbSkewInput.value = `${calc.skew}°`;
+        skewDisplay.textContent = `${calc.skew}°`;
+    } else {
+        activeTarget = { name: sat.name, az: sat.fixedAz, el: sat.fixedEl, skew: 0, tolAz: sat.tolAz, tolEl: sat.tolEl };
+        manualAzInput.value = sat.fixedAz;
+        manualElInput.value = sat.fixedEl;
+        lnbSkewInput.value = 'Auto';
+        skewDisplay.textContent = 'Auto';
+    }
+
+    updateDishTargetVisual();
+    updateObstacleCalc();
+}
+
+function applySelectedTP() {
+    const sat = SATELLITE_DB[satSelect.value];
+    const tp = sat.tps[tpPresetSelect.value || 0];
+    if (tp) {
+        tpFreq.value = tp.freq;
+        tpSr.value = tp.sr;
+        tpPol.value = tp.pol;
+    }
+}
+
+tpPresetSelect.addEventListener('change', applySelectedTP);
+satSelect.addEventListener('change', updateSelectedSatellite);
+
+manualAzInput.addEventListener('input', () => {
+    satSelect.value = 'manual';
+    activeTarget.az = Math.max(0, Math.min(360, parseFloat(manualAzInput.value) || 0));
+});
+
+manualElInput.addEventListener('input', () => {
+    satSelect.value = 'manual';
+    activeTarget.el = Math.max(0, Math.min(90, parseFloat(manualElInput.value) || 0));
+    updateDishTargetVisual();
+    updateObstacleCalc();
+});
+
+function getDishTargetAngle() {
+    const offset = parseFloat(offsetAngleInput.value) || 22.5;
+    return Math.max(0, +(activeTarget.el - offset).toFixed(1));
+}
+
+function updateDishTargetVisual() {
+    const dishMeta = getDishTargetAngle();
+    dishTargetDeg.textContent = `${dishMeta}°`;
+    dishTargetLine.style.transform = `rotate(-${dishMeta}deg)`;
+}
+
+offsetAngleInput.addEventListener('input', () => {
+    MilitaryStorage.save('sf_offset_angle', offsetAngleInput.value);
+    updateDishTargetVisual();
+});
+
+function updateObstacleCalc() {
+    const h = parseFloat(obsHeightInput.value) || 1;
+    MilitaryStorage.save('sf_obs_height', obsHeightInput.value);
+    const rad = (activeTarget.el * Math.PI) / 180;
+    const dist = (h / Math.tan(rad)).toFixed(1);
+    obsDistanceVal.textContent = `${dist} metros`;
+    obsNote.textContent = `Para librar ${activeTarget.name} a ${activeTarget.el}° de elevación`;
+}
+
+obsHeightInput.addEventListener('input', updateObstacleCalc);
+
+function renderSavedSites() {
+    const sites = MilitaryStorage.load('starfinder_sites', []);
+    savedSitesList.innerHTML = '';
+    sites.forEach((s, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<div><strong>${s.name}</strong><br><small style="color:#8a99b8;">${s.sat} | Az: ${s.az}° El: ${s.el}°</small></div><button class="del-site" onclick="deleteSite(${idx})">✕</button>`;
+        savedSitesList.appendChild(li);
+    });
+}
+
+window.deleteSite = function(idx) {
+    const sites = MilitaryStorage.load('starfinder_sites', []);
+    sites.splice(idx, 1);
+    MilitaryStorage.save('starfinder_sites', sites);
+    renderSavedSites();
+};
+
+btnSaveSite.addEventListener('click', () => {
+    const name = siteNameInput.value.trim() || `Zona ${new Date().toLocaleDateString()}`;
+    const sites = MilitaryStorage.load('starfinder_sites', []);
+    sites.unshift({ name, sat: activeTarget.name, az: activeTarget.az, el: activeTarget.el, coords: `${userLat.toFixed(3)}, ${userLon.toFixed(3)}` });
+    MilitaryStorage.save('starfinder_sites', sites);
+    siteNameInput.value = '';
+    renderSavedSites();
+});
+
+renderSavedSites();
+updateSelectedSatellite();
+
+// 7. PITIDO Y VIBRACIÓN DESBLOQUEADOS PARA APPCREATOR24
+function unlockAudioAndVibe() {
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+    } catch (e) {}
+}
+
+document.addEventListener('touchstart', unlockAudioAndVibe, { once: true });
+document.addEventListener('click', unlockAudioAndVibe, { once: true });
+
+btnBeep.addEventListener('click', () => {
+    unlockAudioAndVibe();
+    beepEnabled = !beepEnabled;
+    MilitaryStorage.save('sf_beep_enabled', beepEnabled);
+    btnBeep.textContent = beepEnabled ? '🔊 PITIDO: ON' : '🔇 PITIDO: OFF';
+});
+
+function triggerVibe(pattern) {
+    const now = Date.now();
+    if (now - lastVibeTime < 350) return;
+    lastVibeTime = now;
+    try {
+        if (navigator.vibrate) navigator.vibrate(pattern);
+    } catch (e) {}
+}
+
+function playSatFinderBeep(quality) {
+    if (!beepEnabled || quality < 60) return;
+    const now = Date.now();
+    const interval = quality > 92 ? 150 : (quality > 78 ? 360 : 720);
+    if (now - lastBeepTime < interval) return;
+    lastBeepTime = now;
+
+    try {
+        unlockAudioAndVibe();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = 650 + (quality * 8);
+        gain.gain.value = 0.18;
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+    } catch (e) {}
+}
+
+// 8. MONITOR DE SEÑAL Y ACTIVACIÓN DE SENSORES
+function checkRealSignal() {
+    if (!navigator.onLine) {
+        signalPercent.textContent = 'Offline';
+        signalBars.forEach(b => b.classList.remove('active'));
+        return;
+    }
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const type = conn && conn.effectiveType ? conn.effectiveType.toUpperCase() : '4G';
+    signalPercent.textContent = type;
+    const activeCount = type === '4G' ? 5 : (type === '3G' ? 3 : 2);
+    signalBars.forEach((b, i) => b.classList.toggle('active', i < activeCount));
+}
+setInterval(checkRealSignal, 3000);
+checkRealSignal();
+
+btnSensors.addEventListener('click', async () => {
+    unlockAudioAndVibe();
+    triggerVibe(40);
+    if (!keepScreenOn) enableWakeLock();
+
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        try {
+            const response = await DeviceOrientationEvent.requestPermission();
+            if (response === 'granted') startOrientation();
+        } catch (e) {
+            alert('Permiso de sensores denegado.');
+        }
+    } else {
+        startOrientation();
+    }
+
+    startGPS();
+    btnSensors.textContent = 'SENSORES ACTIVOS ✓';
+    btnSensors.style.background = 'linear-gradient(135deg, #00ff88, #00b4d8)';
+});
+
+// 9. RASTREO DE ORIENTACIÓN, GPS OFFLINE Y CÁMARA AR
+function startOrientation() {
+    const eventName = 'ondeviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation';
+
+    window.addEventListener(eventName, (event) => {
+        let compass = event.webkitCompassHeading || (event.alpha ? (360 - event.alpha) % 360 : 0);
+        compass = Math.round(compass);
+
+        const beta = event.beta || 0;
+        const gamma = event.gamma || 0;
+
+        const skyElevation = Math.max(0, Math.min(90, Math.round(beta - 90)));
+        azimuthVal.textContent = `${compass}° / ${activeTarget.az}°`;
+        tiltVal.textContent = `${skyElevation}° / ${activeTarget.el}°`;
+
+        let diffAz = ((activeTarget.az - compass + 540) % 360) - 180;
+        let diffEl = activeTarget.el - skyElevation;
+
+        const radarX = Math.max(-75, Math.min(75, diffAz * 1.3));
+        const radarY = Math.max(-75, Math.min(75, -diffEl * 1.5));
+        satTarget.style.transform = `translate(${radarX}px, ${radarY}px)`;
+
+        const tiltX = Math.max(-6, Math.min(6, gamma / 6));
+        const tiltY = Math.max(-6, Math.min(6, (beta - 135) / 6));
+        card3D.style.transform = `rotateY(${tiltX}deg) rotateX(${-tiltY}deg)`;
+
+        const azError = Math.abs(diffAz);
+        const elError = Math.abs(diffEl);
+        let azScore = Math.max(0, 100 - (azError / activeTarget.tolAz) * 50);
+        let elScore = Math.max(0, 100 - (elError / activeTarget.tolEl) * 50);
+        let totalQuality = beta < 90 ? 0 : Math.round((azScore + elScore) / 2);
+
+        satQualityBar.style.width = `${totalQuality}%`;
+        satQualityText.textContent = `${totalQuality}%`;
+
+        const activeViewId = document.querySelector('.view-section.active').id;
+
+        if (activeViewId === 'view-radar') {
+            if (beta < 90) {
+                setGuidance('⚠️ APUNTANDO AL SUELO. LEVANTA LA CÁMARA AL CIELO', '#ff3b5c', false);
+            } else if (azError <= activeTarget.tolAz && elError <= activeTarget.tolEl) {
+                setGuidance(`✅ ¡SEÑAL ENGANCHADA! ${activeTarget.name} (${totalQuality}%)`, '#00ff88', true);
+                triggerVibe(80);
+                playSatFinderBeep(totalQuality);
+            } else {
+                let msg = '';
+                if (azError > activeTarget.tolAz) msg += diffAz > 0 ? '➡️ DERECHA ' : '⬅️ IZQUIERDA ';
+                if (elError > activeTarget.tolEl) msg += diffEl > 0 ? '⬆️ SUBE MÁS' : '⬇️ BAJA UN POCO';
+                setGuidance(msg.trim(), '#ffbe0b', false);
+                if (totalQuality > 60) {
+                    triggerVibe(25);
+                    playSatFinderBeep(totalQuality);
+                }
+            }
+        }
+
+        const dishAngle = Math.max(0, Math.min(90, +(90 - Math.abs(beta)).toFixed(1)));
+        const dishMeta = getDishTargetAngle();
+        const dishDiff = Math.abs(dishAngle - dishMeta);
+
+        dishCurrentDeg.textContent = `${dishAngle}°`;
+        dishCurrentLine.style.transform = `rotate(-${dishAngle}deg)`;
+
+        if (activeViewId === 'view-dish') {
+            if (dishDiff <= 1.5) {
+                dishStatusMsg.textContent = `✅ ¡PLATO EN ÁNGULO EXACTO! (${dishAngle}°) - APRIETA TORNILLOS`;
+                dishStatusMsg.style.color = '#00ff88';
+                dishStatusMsg.style.borderColor = '#00ff88';
+                playSatFinderBeep(98);
+                triggerVibe(80);
+            } else if (dishDiff <= 6) {
+                dishStatusMsg.textContent = `🟡 MUY CERCA (${dishAngle}°) - ${dishAngle < dishMeta ? 'INCLINA MÁS ARRIBA' : 'INCLINA MÁS ABAJO'}`;
+                dishStatusMsg.style.color = '#ffbe0b';
+                playSatFinderBeep(75);
+                triggerVibe(25);
+            } else {
+                dishStatusMsg.textContent = dishAngle < dishMeta
+                    ? `⬆️ LEVANTA EL PLATO (Faltan ${(dishMeta - dishAngle).toFixed(1)}°)`
+                    : `⬇️ BAJA EL PLATO (Sobran ${(dishAngle - dishMeta).toFixed(1)}°)`;
+                dishStatusMsg.style.color = '#00f2fe';
+            }
+        }
+
+        const tiltLateral = +(gamma).toFixed(1);
+        const tiltFrontal = Math.abs(beta) > 45 ? +(beta - 90).toFixed(1) : +(beta).toFixed(1);
+
+        levelXVal.textContent = `${tiltLateral}°`;
+        levelYVal.textContent = `${tiltFrontal}°`;
+
+        const bubbleX = Math.max(-65, Math.min(65, tiltLateral * 2.5));
+        const bubbleY = Math.max(-65, Math.min(65, tiltFrontal * 2.5));
+        bubbleDot.style.transform = `translate(${bubbleX}px, ${bubbleY}px)`;
+
+        if (Math.abs(tiltLateral) <= 1.0 && Math.abs(tiltFrontal) <= 1.0) {
+            bubbleDot.style.background = 'radial-gradient(circle at 30% 30%, #fff, #00ff88)';
+            bubbleDot.style.boxShadow = '0 0 18px #00ff88';
+            levelStatusMsg.textContent = '✅ MÁSTIL 100% A PLOMO (0.0° NIVELADO)';
+            levelStatusMsg.style.color = '#00ff88';
+            if (activeViewId === 'view-level') {
+                playSatFinderBeep(95);
+                triggerVibe(40);
+            }
+        } else {
+            bubbleDot.style.background = 'radial-gradient(circle at 30% 30%, #fff, #ffbe0b)';
+            bubbleDot.style.boxShadow = '0 0 15px #ffbe0b';
+            levelStatusMsg.textContent = `⚠️ DESNIVELADO: Ajusta el tubo (X: ${tiltLateral}° | Y: ${tiltFrontal}°)`;
+            levelStatusMsg.style.color = '#ffbe0b';
+        }
+    });
+}
+
+function setGuidance(text, color, isLocked) {
+    alignmentMsg.textContent = text;
+    alignmentMsg.style.color = color;
+    alignmentMsg.style.borderColor = color;
+    userAim.style.borderColor = color;
+    userAim.style.boxShadow = `0 0 18px ${color}`;
+    userAim.style.transform = isLocked ? 'scale(1.15)' : 'scale(1)';
+}
+
+function startGPS() {
+    if ('geolocation' in navigator) {
+        navigator.geolocation.watchPosition(
+            (pos) => {
+                userLat = pos.coords.latitude;
+                userLon = pos.coords.longitude;
+                MilitaryStorage.save('sf_last_gps', { lat: userLat, lon: userLon });
+                gpsVal.textContent = `${userLat.toFixed(4)}, ${userLon.toFixed(4)}`;
+                gpsZoneLabel.textContent = 'ZONA: GPS EN TIEMPO REAL ACTIVO';
+                updateSelectedSatellite();
+            },
+            () => {
+                gpsZoneLabel.textContent = 'ZONA: GPS GUARDADO OFFLINE';
+            },
+            { enableHighAccuracy: true }
+        );
+    }
+}
+
+btnCamera.addEventListener('click', async () => {
+    unlockAudioAndVibe();
+    if (!cameraActive) {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { ideal: 'environment' } }
+            });
+            cameraFeed.srcObject = stream;
+            cameraFeed.classList.add('active');
+            cameraActive = true;
+            btnCamera.textContent = '📷 CÁMARA AR: ON';
+        } catch (err) {
+            alert('Activa el permiso de cámara en la configuración de la App.');
+        }
+    } else {
+        if (stream) stream.getTracks().forEach(t => t.stop());
+        cameraFeed.classList.remove('active');
+        cameraActive = false;
+        btnCamera.textContent = '📷 CÁMARA AR: OFF';
+    }
+});
+</script>
+</body>
+</html>
+
+
+
+        
+   
